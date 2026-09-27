@@ -5,8 +5,12 @@
   "mcpServers": {
     "arena": {
       "command": "npx",
-      "args": ["-y", "arena-mcp-server"]
+      "args": [
+        "-y",
+        "arena-mcp-server"
+      ]
     }
   },
-  "contextFileName": "AGENTS.md"
+  "contextFileName": "AGENTS.md",
+  "license": "MIT"
 }

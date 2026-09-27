@@ -164,4 +164,4 @@ Claude Code sends an update to people who installed the plugin only when `versio
 | [arena-prediction-cli](https://www.npmjs.com/package/arena-prediction-cli) | The `arena` command. |
 | [arena-mcp-server](https://www.npmjs.com/package/arena-mcp-server) | The local stdio MCP server. |
 
-This repository holds documentation, examples and install manifests only. See [NOTICE](NOTICE) for how you may use them.
+This repository holds documentation, examples and install manifests. It is released under the [MIT License](LICENSE). The arena-prediction-cli and arena-mcp-server packages on npm carry their own terms. Arena itself is a paid service: paper trading with virtual dollars that are never redeemable, and nothing here can move real money.

@@ -17,5 +17,6 @@
     "mcp-server",
     "ai-agents",
     "cli"
-  ]
+  ],
+  "license": "MIT"
 }
