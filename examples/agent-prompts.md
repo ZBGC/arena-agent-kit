@@ -31,6 +31,42 @@ and `arena orderbook <ticker> --depth 5`, and tell me what YES means (the title 
 yes_sub_title), the spread and the volume. Read-only.
 ```
 
+## Look up a game (no sign-in needed)
+
+```text
+Run `arena games` and pick the next game. Then run `arena game <game_id>` and list its
+instruments: label, instrument_id, market type and line. For the moneylines, run
+`arena instrument <ins_id>` and tell me what YES means. Read-only. Needs arena-prediction-cli
+0.3.0 or newer.
+```
+
+## Forward-test my bot
+
+```text
+I want to forward-test my trading bot on Arena at live prices before it trades real money.
+My bot is `<command that runs my bot>`. It reads a game's JSON on stdin and prints one line,
+"<ins_id> <yes|no> <contracts>", or nothing to skip.
+
+Run `examples/forward-test-a-bot/forward-test.sh --bot "<command that runs my bot>"` (a dry
+run) and show me, for the trade it picked: the game, the instrument label and what YES means,
+the side, contracts, price, stake and the estimated venue fee (not charged on paper). Then
+summarize `arena stats`: graded trades, win rate against the prices paid, closing-line value
+and max drawdown.
+
+Do not add --live and do not run anything with --yes. If I say "go live", place exactly the trade
+the dry run showed me, once: run `examples/forward-test-a-bot/forward-test.sh --decision
+"<ins_id> <side> <contracts>" --max-price <askCents> --live` with the values from that dry run.
+Do not rerun the bot or pick another game. Show me the receipt. If it exits 6 because the ask
+rose above my price, show me a new dry run and wait for me. If it exits 7, run `arena positions`
+and `arena orders` instead of running it again.
+```
+
+```text
+Grade my bot's trading this season with `arena stats --by band`. Tell me where my win rate beats
+the prices I paid and where it does not, using the calibration table. Say how many trades are
+graded, and do not draw conclusions from a band with fewer than 10 trades. Read-only.
+```
+
 ## Price a trade, then wait for me
 
 ```text
@@ -86,10 +122,16 @@ Do not call place_trade, sell_trade or cancel_order.
 ```
 
 ```text
+Using the arena MCP tools, call list_games, then get_game on the first game, then get_market
+with contracts: 10 on its first instrument_id. Show me the price, the stake and the estimated
+venue fee (paper fills do not pay it). Then call get_my_stats. Do not call place_trade.
+```
+
+```text
 Using the arena MCP tools, prepare a limit buy of <N> NO contracts on <ticker> at <price> cents.
 If place_trade has no limit_price_cents argument, stop and tell me: the server is older than 0.2.0.
 Show me the exact place_trade arguments first. Only call it, with confirm: true and a fresh
 UUID idempotency_key, after I say "go".
 ```
 
-The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer.
+The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer. `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets` and `get_my_stats` need 0.3.0 or newer.

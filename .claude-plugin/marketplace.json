@@ -1,0 +1,15 @@
+{
+  "name": "arena-predictions",
+  "owner": {
+    "name": "ZBGC LLC",
+    "email": "support@zbgcllc.com"
+  },
+  "description": "The Arena Predictions plugin for Claude Code: paper trade prediction markets at live prices.",
+  "plugins": [
+    {
+      "name": "arena",
+      "source": "./",
+      "description": "Paper trade prediction markets at live prices from Claude Code: the Arena MCP server and the arena-paper-trading skill."
+    }
+  ]
+}
