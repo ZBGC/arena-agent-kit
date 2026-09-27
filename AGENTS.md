@@ -151,9 +151,9 @@ These need `arena login` and arena-prediction-cli 0.3.0 or newer. They read and 
 
 ## 12. If the user has the MCP server instead
 
-The same rules apply. arena-mcp-server 0.3.0 registers 16 tools by default and 21 with trading on.
+The same rules apply. arena-mcp-server 0.3.1 registers 17 tools by default and 22 with trading on.
 
-- **Signed out:** `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game` and `list_games`.
+- **Signed out:** `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games` and `get_cross_venue_quotes` (0.3.1 or newer; comparison only, say which venue each price is from and its time, and pass on its notes).
 - **Need `arena login`:** `get_positions`, `get_balance`, `get_history`, `get_my_stats`, `list_markets`, `search_markets`, `get_market`, `get_orderbook`, `get_price_history` and `screen_markets`.
 - **Only when the user set `ARENA_MCP_ALLOW_TRADE=1`:** `place_trade`, `sell_trade`, `get_orders`, `cancel_order` and `settle_open`.
 

@@ -104,11 +104,12 @@ Give your agent [AGENTS.md](AGENTS.md), or paste https://arena-predictions.com/a
 
 ### The MCP server
 
-arena-mcp-server 0.3.0 registers 16 tools by default, 6 of them signed out, and 21 with trading on. This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools.
+arena-mcp-server 0.3.1 registers 17 tools by default, 7 of them signed out, and 22 with trading on. This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools, and 0.3.1 or newer for `get_cross_venue_quotes`.
 
 | Group | Tools |
 |---|---|
 | Public records and lookups (signed out) | `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games` |
+| Prices on other venues (signed out) | `get_cross_venue_quotes`: one instrument's price on Kalshi and, while Arena shows them, on Novig and Polymarket, for comparison only. Arena does not route orders to Kalshi, Novig or Polymarket and has no partnership with any of them. |
 | Your account (needs `arena login`) | `get_positions`, `get_balance`, `get_history`, `get_my_stats` |
 | Markets (needs `arena login`) | `list_markets`, `search_markets`, `get_market`, `get_orderbook`, `get_price_history`, `screen_markets` |
 | Trading (only with `ARENA_MCP_ALLOW_TRADE=1`) | `place_trade`, `sell_trade`, `get_orders`, `cancel_order`, `settle_open` |

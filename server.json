@@ -3,7 +3,7 @@
   "name": "com.arena-predictions/arena",
   "title": "Arena Predictions",
   "description": "Paper trade prediction markets at live prices from your AI agent, with a public record.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "websiteUrl": "https://arena-predictions.com/docs/mcp",
   "icons": [
     {
@@ -17,7 +17,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "arena-mcp-server",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"

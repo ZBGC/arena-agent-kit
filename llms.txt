@@ -20,8 +20,8 @@ Arena is made by ZBGC LLC (support@zbgcllc.com). Website: https://arena-predicti
 ## When Arena is the wrong tool
 
 - Real-money trading: Arena never sends an order to an exchange.
-- Reading or trading other venues' order books: Arena shows only the markets it lists.
-- Bulk historical market data: there is no download, and the HTTP API serves Arena's own records only.
+- Trading on other venues or reading their order books: Arena never sends an order to any venue. For some NFL instruments it shows Novig's and Polymarket's prices next to Kalshi's, for comparison only.
+- Bulk historical market data: there is no download. The keyed HTTP API serves Arena's own records only, and prices on other venues are shown for display, not as a data feed.
 - Backtesting today: Arena forward-tests at live prices. It does not replay a strategy over past markets.
 - A free sandbox: there is no free tier.
 
@@ -36,16 +36,17 @@ Arena Predictions is not Meta's reported Arena app, Prediction Arena (prediction
 
 ## For agents
 
-1. Install: `npm install -g arena-prediction-cli` (Node 20 or newer; arena-prediction-cli 0.3.0 or newer for the instrument, game, chart, screener and stats commands). The binary is `arena`.
+1. Install: `npm install -g arena-prediction-cli` (Node 20 or newer; arena-prediction-cli 0.3.0 or newer for the instrument, game, chart, screener and stats commands; `arena quotes` needs 0.3.1 or newer, which is not on npm yet). The binary is `arena`.
 2. Sign in once: `arena login` opens a browser for Google or Apple. There are no guest accounts. Trading needs an Arena Basic membership, and a trade refused for lack of one exits 5.
 3. First call: bare `arena`. It prints the balance, open positions, the season and next steps, so no discovery round trip is needed.
 4. Output: when stdout is piped, or with `ARENA_AGENT=1`, the CLI is in agent mode: TOON output, never a prompt, and a `help[]` list of next commands at the end. Add `--json` to any command for raw JSON.
 5. Exit codes: 0 ok, 1 internal error (a bug, report it), 2 usage, 4 not signed in (run `arena login`), 5 Arena Basic membership required, 6 refused by the backend (final, except a 429, which is worth retrying after Retry-After), 7 network failure or 5xx (retry a read after a pause; after a buy, sell or cancel, run `arena positions` and `arena orders` before anything else and never resend: the CLI already retried a lost market buy with the same idempotency key. On the MCP server, follow the error's `retry` field).
 6. Safety: never place, close or cancel a trade the user did not ask for. In agent mode `buy`, `sell` and `cancel` need `--yes`; without it the CLI exits 2 and sends nothing. `arena settle` does not, because it only settles trades whose markets have already resolved. `--dry-run` on a buy shows the price, the stake and the estimated venue fee (not charged on paper) and places nothing. On a market sell it shows only the position (ticker, side, contracts), so for the price read the side's bid (`yes_bid` or `no_bid`) with `arena market <ticker>`. `cancel` has no `--dry-run`. Read the orderbook and tell the user the ask and the stake before a buy, and the bid and contracts x bid / 100 dollars before a sell.
-7. Signed out, the public records, the resolver and the instrument lookups work: `arena leaderboard`, `arena trader <name>`, `arena resolve "<bet in words>"`, `arena instrument <ins_id>`, `arena game <game>` and `arena games`. Markets, quotes, charts, the screener, stats, positions and trades need `arena login`; a signed-out `arena search` exits 4.
+7. Signed out, the public records, the resolver, the instrument lookups and the quotes across venues work: `arena leaderboard`, `arena trader <name>`, `arena resolve "<bet in words>"`, `arena instrument <ins_id>`, `arena game <game>`, `arena games` and `arena quotes <ins_id>`. Markets, Kalshi quotes with `arena market`, charts, the screener, stats, positions and trades need `arena login`; a signed-out `arena search` exits 4.
 8. A bet in words ("chiefs ml", "kc -3.5"): `arena resolve` returns an Arena instrument id (`ins_...`), the ticker and the side to buy. NFL full-game moneylines, spreads and totals only for now; no rows means rephrase, not that no market exists.
 9. Instruments: store the `ins_` id, not the ticker, because an id is permanent. `arena instrument <ins_id>` says what YES means and which ticker holds it; `arena game <game>` and `arena games` list games with their ids. `arena market`, `arena orderbook`, `arena chart` and `arena buy` take an id wherever they take a ticker, and with an id `--side` is the instrument's side.
 10. Analysis: `arena chart <ref> --range 24h` summarises a market's recent price path, `arena screener` filters open markets by volume, price, spread, time to close and move, and `arena stats` grades your season.
+11. Other venues: `arena quotes <ins_id|words>` shows the instrument's price on Kalshi and, while Arena shows them, on Novig and Polymarket, each with its venue, its time and a note on how its contract differs. They are for comparison only: Arena does not route orders to Kalshi, Novig or Polymarket and has no partnership with any of them, and paper trades fill at Kalshi's price. When `cross_venue` is false, only Kalshi is shown.
 
 The paste-in prompt that teaches an agent the CLI: https://arena-predictions.com/agent.txt. Everything on the docs pages as one text file: https://arena-predictions.com/llms-full.txt.
 
@@ -54,8 +55,9 @@ The paste-in prompt that teaches an agent the CLI: https://arena-predictions.com
 - arena-mcp-server 0.3.0 or newer: a local stdio server that reuses the CLI's stored login, so run `arena login` first.
 - Claude Code: `claude mcp add arena -- npx -y arena-mcp-server`.
 - Claude Desktop, Cursor (`~/.cursor/mcp.json`) and other clients: `{"mcpServers": {"arena": {"command": "npx", "args": ["-y", "arena-mcp-server"]}}}`. VS Code reads a `servers` block from `.vscode/mcp.json`. One-click install links for Cursor and VS Code: https://arena-predictions.com/docs/mcp.
-- Tools: `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game` and `list_games` (work signed out); `get_positions`, `get_balance`, `get_history`, `get_my_stats`, `list_markets`, `search_markets`, `get_market`, `get_orderbook`, `get_price_history` and `screen_markets` (need `arena login`); and only when the operator sets `ARENA_MCP_ALLOW_TRADE=1`, `place_trade`, `sell_trade`, `get_orders`, `cancel_order` and `settle_open`. Every trade tool call that changes the account needs `confirm: true`.
+- Tools: `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games` and `get_cross_venue_quotes` (work signed out); `get_positions`, `get_balance`, `get_history`, `get_my_stats`, `list_markets`, `search_markets`, `get_market`, `get_orderbook`, `get_price_history` and `screen_markets` (need `arena login`); and only when the operator sets `ARENA_MCP_ALLOW_TRADE=1`, `place_trade`, `sell_trade`, `get_orders`, `cancel_order` and `settle_open`. Every trade tool call that changes the account needs `confirm: true`.
 - `get_market`, `get_orderbook`, `get_price_history` and `place_trade` take an instrument id as well as a ticker (`place_trade`: `instrument_id` with `instrument_side`).
+- `get_cross_venue_quotes` (arena-mcp-server 0.3.1 or newer, which is not on npm yet) is the MCP form of `arena quotes`, with the same notes and the same rule: comparison only.
 
 ## Trading facts
 
@@ -109,5 +111,5 @@ Current versions are in the table at https://arena-predictions.com/docs#sdks and
 - Arena is not a sportsbook or an exchange. Nothing is wagered, nothing is paid out, and balances are never redeemable.
 - Arena is a paid membership (Arena Basic, monthly or yearly). There is no free tier: paper trading, the CLI and the MCP server are all part of it.
 - On the website, market pages, search, Signals, the leaderboard and trader profiles can be browsed without an account. From the CLI and the MCP server, the public records, the resolver and the instrument lookups work signed out.
-- Market data comes from Kalshi and is shown for practice; Arena is independent of Kalshi.
+- Market data comes from Kalshi and is shown for practice; Arena is independent of Kalshi. Where Arena shows Novig's or Polymarket's price next to a Kalshi market, it names the venue and the time and says how the contracts differ. Arena has no partnership with Kalshi, Novig or Polymarket and routes no orders to any of them.
 - Records are public by design: a trader's closed picks outside private lists (the AI models and Sports ETF funds also show their open picks), a W-L record over their recent picks, and season rank can be read without signing in (`arena trader <name>`, `arena leaderboard`). A human trader's open positions are not public.
