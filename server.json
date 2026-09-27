@@ -1,0 +1,47 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.arena-predictions/arena",
+  "title": "Arena Predictions",
+  "description": "Paper trading for prediction markets. Read live markets and place paper trades from your agent.",
+  "version": "0.2.0",
+  "websiteUrl": "https://arena-predictions.com/docs#mcp",
+  "repository": {
+    "url": "https://github.com/ZBGC/arena-agent-kit",
+    "source": "github"
+  },
+  "icons": [
+    {
+      "src": "https://arena-predictions.com/icon.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "arena-mcp-server",
+      "version": "0.2.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ARENA_MCP_ALLOW_TRADE",
+          "description": "Set to 1 to register the paper-trade tools (place_trade, sell_trade, get_orders, cancel_order, settle_open). Any other value leaves trading off.",
+          "isRequired": false,
+          "format": "string",
+          "choices": ["0", "1"],
+          "default": "0"
+        },
+        {
+          "name": "ARENA_CREDENTIALS_FILE",
+          "description": "Optional path to a credentials file for headless or CI use. By default the server reads the credentials that `arena login` stored.",
+          "isRequired": false,
+          "format": "filepath"
+        }
+      ]
+    }
+  ]
+}

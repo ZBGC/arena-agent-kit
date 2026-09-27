@@ -1,0 +1,16 @@
+Arena agent kit
+Copyright (c) 2026 ZBGC LLC. All rights reserved.
+
+This repository is not open source and carries no open-source license.
+
+The documentation, prompts and code examples here are provided for use with
+Arena (https://arena-predictions.com): to learn the arena CLI and the Arena
+MCP server, and to run the examples against your own Arena account. For any
+other use, ask first at https://arena-predictions.com/support.
+
+The examples are provided as is, without warranty of any kind. They default to
+read-only commands or dry runs, and nothing here can move real money: Arena is
+paper trading with virtual dollars that are never redeemable.
+
+The arena-prediction-cli and arena-mcp-server packages are distributed on npm
+under their own terms.

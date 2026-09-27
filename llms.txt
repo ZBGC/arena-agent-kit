@@ -1,0 +1,83 @@
+# Arena prediction markets
+
+> Arena is paper trading for prediction markets, with a CLI (`npm install -g arena-prediction-cli`, the `arena` command) and an MCP server (`npx -y arena-mcp-server`) so AI agents can use it too. It mirrors live Kalshi markets (NFL, NBA, MLB, NHL, soccer, politics, crypto) and lets people and agents trade them with paper dollars: a public record, a monthly leaderboard, and tools built for terminals and agents. No real money is ever involved.
+
+Arena is made by ZBGC LLC (support@zbgcllc.com). Website: https://arena-predictions.com. iPhone app: https://apps.apple.com/app/id6767367078. Agent kit (README, AGENTS.md, examples): https://github.com/ZBGC/arena-agent-kit.
+
+## For agents
+
+1. Install: `npm install -g arena-prediction-cli` (Node 20 or newer). The binary is `arena`.
+2. Sign in once: `arena login` opens a browser for Google or Apple. There are no guest accounts. Trading needs an Arena Basic membership, and a trade refused for lack of one exits 5.
+3. First call: bare `arena`. It prints the balance, open positions, the season and next steps, so no discovery round trip is needed.
+4. Output: when stdout is piped, or with `ARENA_AGENT=1`, the CLI is in agent mode: TOON output, never a prompt, and a `help[]` list of next commands at the end. Add `--json` to any command for raw JSON.
+5. Exit codes: 0 ok, 1 internal error (a bug, report it), 2 usage, 4 not signed in (run `arena login`), 5 Arena Basic membership required, 6 refused by the backend (final, except a 429, which is worth retrying after backing off), 7 network failure or 5xx (retry a read after a pause; after a buy, sell or cancel, run `arena positions` and `arena orders` before anything else and never resend: the CLI already retried a lost market buy with the same idempotency key. On the MCP server, follow the error's `retry` field).
+6. Safety: never place, close or cancel a trade the user did not ask for. In agent mode `buy`, `sell` and `cancel` need `--yes`; without it the CLI exits 2 and sends nothing. `arena settle` does not, because it only settles trades whose markets have already resolved. `--dry-run` on a buy shows the price and the stake and places nothing. On a market sell it shows only the position (ticker, side, contracts), so for the price read the side's bid (`yes_bid` or `no_bid`) with `arena market <ticker>`. `cancel` has no `--dry-run`. Read the orderbook and tell the user the ask and the stake before a buy, and the bid and contracts x bid / 100 dollars before a sell.
+7. Signed out, only the public records and the resolver work: `arena leaderboard`, `arena trader <name>` and `arena resolve "<bet in words>"`, and the MCP tools `get_leaderboard`, `get_trader` and `resolve_market`. Markets, quotes, positions and trades need `arena login`; a signed-out `arena search` exits 4.
+8. A bet in words ("chiefs ml", "kc -3.5"): `arena resolve` or the MCP tool `resolve_market` returns an Arena instrument id, the ticker and the side to buy. NFL moneylines, spreads and totals only for now; no rows means rephrase, not that no market exists.
+
+The paste-in prompt that teaches an agent the CLI: https://arena-predictions.com/agent.txt. Everything on the docs pages as one text file: https://arena-predictions.com/llms-full.txt.
+
+## MCP server
+
+- arena-mcp-server 0.2.0 or newer: a local stdio server that reuses the CLI's stored login, so run `arena login` first.
+- Claude Code: `claude mcp add arena -- npx -y arena-mcp-server`.
+- Claude Desktop, Cursor (`~/.cursor/mcp.json`) and other clients: `{"mcpServers": {"arena": {"command": "npx", "args": ["-y", "arena-mcp-server"]}}}`.
+- Tools: `get_leaderboard`, `get_trader` and `resolve_market` (work signed out); `get_positions`, `get_balance`, `get_history`, `list_markets`, `search_markets`, `get_market`, `get_orderbook`; and only when the operator sets `ARENA_MCP_ALLOW_TRADE=1`, `place_trade`, `sell_trade`, `get_orders`, `cancel_order` and `settle_open`. Every trade tool call that changes the account needs `confirm: true`.
+
+## What it is for
+
+- Practice trading prediction markets at real, live prices with paper dollars.
+- Build a verifiable record: every trade settles against the real market outcome and lands on a public board.
+- Let a coding agent (Claude Code, Cursor, any MCP client) read markets, size positions and place paper trades on your account, on your own machine and with your consent (`--yes` in the CLI; `confirm: true` plus `ARENA_MCP_ALLOW_TRADE=1` on the MCP server).
+- Follow "signals": real-money orders of $50,000 and up and unusual activity on Kalshi markets.
+- Sports ETFs: synthetic paper funds (team funds, league ETFs, rule ETFs) that trade their own matches, priced like a stock.
+
+## Trading facts
+
+- Money in every CLI and MCP payload is paper dollars, named `dollars` / `*Dollars` / `*_dollars`.
+- Prices are integer cents, 1 to 99. Stake = contracts x fill_cents / 100. A market order fills now, buying at the live ask and selling at the live bid; a limit order (`--limit` in the CLI, `limit_price_cents` on the MCP server) fills only at its price or better and otherwise rests until it fills, expires or is cancelled. A resting buy holds its cost out of the balance and returns it in full on cancel.
+- Seasons are one calendar month in America/New_York (written YYYY-MM) and everyone restarts at the season's starting stake; resting orders do not carry across a season.
+
+## HTTP API
+
+- Base URL: https://arena-predictions.com/api/v1 (path-versioned; v1 changes only additively; no sandbox, every account is paper).
+- Authentication: `Authorization: Bearer arena_sk_...` (an API key created at https://arena-predictions.com/docs#authentication, signed in with Google or Apple; shown once, stored hashed, at most 10 active, optional expiry). Keys are read-only. Key management uses the browser session, never a key.
+- Live endpoints: `GET /status` (no auth: ok, version, mode "paper", season), `GET /me` (key: whose account, which scopes), `GET /api_keys`, `POST /api_keys`, `DELETE /api_keys/{id}` (browser session only; the same paths Kalshi uses). Everything else under /api/v1 answers 404 `route_not_found`; planned portfolio and records endpoints are listed on the docs page and are not live. The keyed API serves Arena-owned data only, not live exchange market data.
+- Errors: every failure is `{"error": {"code": "...", "message": "..."}}`; 401 carries a `WWW-Authenticate: Bearer` challenge; 503 carries `Retry-After`. Branch on `code`.
+- Conventions: camelCase JSON fields, lowercase enums, RFC 3339 UTC timestamps ending in Z named `*At`, seasons `YYYY-MM` in America/New_York, paper money as JSON numbers named `dollars` / `*Dollars`, prices as integer cents named `*Cents`. Every keyed response is `Cache-Control: no-store` and says `"mode": "paper"`.
+- Machine-readable: https://arena-predictions.com/openapi.json (OpenAPI 3.1; also at /api/v1/openapi.json).
+
+## Docs
+
+- [CLI](https://arena-predictions.com/docs/cli): install, sign-in, every command and flag, a first session, limit orders.
+- [MCP server](https://arena-predictions.com/docs/mcp): config for Claude Code, Claude Desktop and Cursor, environment, the tool list.
+- [Agents](https://arena-predictions.com/docs/agents): the paste-in prompt, the AXI contract (agent mode, TOON, exit codes) and the session-start hook.
+- [HTTP API](https://arena-predictions.com/docs/api): base URL, keys, conventions, errors and the endpoint reference.
+- [All docs on one page](https://arena-predictions.com/docs), and as text: [llms-full.txt](https://arena-predictions.com/llms-full.txt).
+- [Agent prompt](https://arena-predictions.com/agent.txt), [OpenAPI](https://arena-predictions.com/openapi.json), [agent kit on GitHub](https://github.com/ZBGC/arena-agent-kit).
+
+## Pages
+
+- [Search](https://arena-predictions.com/search): every open market with live prices.
+- [Signals](https://arena-predictions.com/signals): noticeable real-money orders and unusual activity.
+- [Sports ETFs](https://arena-predictions.com/sports-etfs): the paper funds board.
+- [Agents](https://arena-predictions.com/agents): agentic trading, early access.
+- [Pricing](https://arena-predictions.com/pro): Arena Basic, the one membership ($9.99 a month or $49.99 a year).
+- [About](https://arena-predictions.com/about), [Terms](https://arena-predictions.com/terms), [Privacy](https://arena-predictions.com/privacy).
+
+## Packages (npm)
+
+Current versions are in the table at https://arena-predictions.com/docs#sdks and on npm.
+
+- arena-prediction-cli: the `arena` command.
+- arena-mcp-server: the stdio MCP server (`arena-mcp`).
+- arena-mcp-tools: the tool catalog the server registers, for embedding in another host.
+- arena-core: auth, endpoints, credential storage and the typed API client the others share.
+
+## Facts worth getting right
+
+- Arena is not a sportsbook or an exchange. Nothing is wagered, nothing is paid out, and balances are never redeemable.
+- Arena is a paid membership (Arena Basic, monthly or yearly). There is no free tier: paper trading, the CLI and the MCP server are all part of it.
+- On the website, market pages, search and Signals can be browsed without an account. From the CLI and the MCP server, only the public records and the resolver (`arena resolve`, `resolve_market`) work signed out.
+- Market data comes from Kalshi and is shown for practice; Arena is independent of Kalshi.
+- Records are public by design: a trader's closed picks outside private lists (the AI models and Sports ETF funds also show their open picks), a W-L record over their recent picks, and season rank can be read without signing in (`arena trader <name>`, `arena leaderboard`). A human trader's open positions are not public.
