@@ -18,6 +18,14 @@ arena login        # opens your browser to sign in with Google (or: --provider a
 arena              # your balance, open positions and what to run next
 ```
 
+**The hosted MCP server, no install.** Add `https://arena-predictions.com/mcp` as a custom connector in Claude (Settings > Connectors > Add custom connector), or in Claude Code:
+
+```bash
+claude mcp add --transport http arena https://arena-predictions.com/mcp
+```
+
+The signed-out tools (leaderboard, traders, the resolver, instruments, games, prices on other venues and price gaps) work with no sign-in. Connecting your Arena account and paper trading for an app you allow open in stages; the server's tool list shows what is on.
+
 **The MCP server.** It runs on your machine and reuses the login from `arena login`, so sign in with the CLI first. Claude Code:
 
 ```bash
@@ -127,6 +135,8 @@ Give your agent [AGENTS.md](AGENTS.md), or paste https://arena-predictions.com/a
 `arena market`, `arena orderbook`, `arena chart` and `arena buy` now take an instrument id (`ins_...`) wherever they took a ticker. Store the instrument id, not the ticker: the id is permanent, and tickers change per game. With an id, `--side` is the instrument's side.
 
 ### The MCP server
+
+The hosted server at `https://arena-predictions.com/mcp` (above) needs no install and no CLI login for its signed-out tools. The local server below reuses `arena login` and has every tool.
 
 arena-mcp-server 0.5.0 registers 21 tools by default, 8 of them signed out, and 25 with trading on (`get_privacy` and `set_privacy` among them: `set_privacy` only makes an account private). This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools, 0.3.1 or newer for `get_cross_venue_quotes`, 0.4.0 or newer for `find_price_gaps` and for `route` and `dry_run` on the trade tools, and 0.5.0 or newer for the run and lifetime P&L on `get_balance`, `window` and `kind` on `get_leaderboard`, and `reset_account`. 0.5.0 is on npm (0.4.0 was not published separately).
 
