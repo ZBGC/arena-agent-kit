@@ -2,7 +2,7 @@
 
 Arena Predictions (arena-predictions.com) lets a bot or AI agent paper trade real prediction markets at live prices from a CLI or an MCP server. No real money moves. A trade held to the end settles against the real outcome. Accounts are private by default: nobody else sees a trader's trades or record until the person makes the profile public in Settings on the website.
 
-This kit is for people who build trading bots and AI agents and want to forward-test them at live prices, with a record that stays private unless they make it public, before they risk real money. It holds the instructions an agent follows, an agent skill, a Claude Code plugin, a Gemini CLI extension and small examples for the `arena` command line and the Arena MCP server.
+This kit is for people who build trading bots and AI agents and want to forward-test them at live prices, with a record that stays private unless they make it public, before they risk real money. It holds the instructions an agent follows, an agent skill, a Claude plugin, a Gemini CLI extension and small examples for the `arena` command line and the Arena MCP server.
 
 - **Price:** Arena Basic costs $9.99 a month or $49.99 a year. There is no free tier. Opening a paper position needs Arena Basic; the signed-out lookups below do not.
 - **Limits:** paper money only; only the markets Arena lists; no orders are sent to any exchange; there is no contract limit, so your balance is the only limit on size (one trade records at most 1,000,000,000 contracts); a fill is at one displayed price for the whole size, with no fee charged; API keys are read-only; and the text-to-ticker resolver covers full-game lines in the NFL, college football, MLB, the NHL, the NBA and the Premier League only. Arena forward-tests at live prices. It does not backtest today.
@@ -39,14 +39,18 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`~/.cursor/mcp.json`):
 }
 ```
 
-**The Claude Code plugin.** It adds the MCP server (read-only) and the arena-paper-trading skill in one step. In Claude Code:
+**The Claude plugin.** It adds the MCP server (read-only) and the arena-paper-trading skill in one step. It runs an exact server version (`arena-mcp-server@0.5.0` in this release) and moves to the next one with each release of this kit. In Claude Code:
 
 ```text
 /plugin marketplace add ZBGC/arena-agent-kit
-/plugin install arena@arena-predictions
+/plugin install arena-predictions@arena-predictions
 ```
 
-From your shell, the same is `claude plugin marketplace add ZBGC/arena-agent-kit`, then `claude plugin install arena@arena-predictions`. If Claude Code asks you to, run `/reload-plugins` to load it.
+From your shell, the same is `claude plugin marketplace add ZBGC/arena-agent-kit`, then `claude plugin install arena-predictions@arena-predictions`. If Claude Code asks you to, run `/reload-plugins` to load it.
+
+The plugin used to be called `arena`. If you installed `arena@arena-predictions`, remove it with `claude plugin uninstall arena@arena-predictions`, run `claude plugin marketplace update arena-predictions`, then install `arena-predictions@arena-predictions`.
+
+Where the plugin's MCP server runs: Claude Code, and Cowork sessions on your own computer, start it. Claude chat on the web, in the desktop app and on mobile loads the skill but does not start local servers. To use the server in chat in the Claude desktop app, add it to `claude_desktop_config.json` as shown above.
 
 **The skill for any agent** (Claude Code, Codex, Cursor and others that read `SKILL.md`):
 
@@ -171,19 +175,46 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 |---|---|
 | [AGENTS.md](AGENTS.md) | Instructions an AI coding agent follows when it uses Arena for you, safety rules first. |
 | [skills/arena-paper-trading/SKILL.md](skills/arena-paper-trading/SKILL.md) | The same workflow as an agent skill. |
-| [.claude-plugin/](.claude-plugin/) | The Claude Code plugin (`plugin.json`) and its marketplace (`marketplace.json`). |
+| [.claude-plugin/](.claude-plugin/) | The Claude plugin `arena-predictions` (`plugin.json`) and its marketplace (`marketplace.json`). |
 | [gemini-extension.json](gemini-extension.json) | The Gemini CLI extension. |
 | [examples/forward-test-a-bot/](examples/forward-test-a-bot/) | A script that forward-tests a bot's pick at live prices. It is a dry run unless you pass `--live`. |
 | [examples/daily-review/](examples/daily-review/) | A read-only script that prints your balance, positions and resting orders as one JSON document, plus a prompt that turns it into a review. |
 | [examples/limit-at-the-bid/](examples/limit-at-the-bid/) | A script that prices a limit buy at the current bid. It is a dry run unless you pass `--place`. |
 | [examples/agent-prompts.md](examples/agent-prompts.md) | Prompts to paste into Claude Code, Cursor or any agent that has the CLI or the MCP server. |
-| [.mcp.json](.mcp.json) | A read-only MCP server config you can copy. The plugin uses it too. |
+| [.mcp.json](.mcp.json) | The plugin's MCP server: read-only, pinned to an exact server version. You can copy it. |
+| [assets/icon.png](assets/icon.png) | The Arena Predictions icon, 512 by 512. |
 | [server.json](server.json) | The server's entry for the official MCP registry. |
 | [llms.txt](llms.txt) | A copy of https://arena-predictions.com/llms.txt. The live file is the one to trust. |
 
 ### Releasing a change
 
 Claude Code sends an update to people who installed the plugin only when `version` in `.claude-plugin/plugin.json` changes. New commits with the same version do not reach them. So a change to `skills/`, `.mcp.json`, `AGENTS.md` or `llms.txt` ships with a version bump, for example 0.3.0 to 0.3.1, made in both `.claude-plugin/plugin.json` and `gemini-extension.json` so the two stay the same. Keep `version` out of `marketplace.json`: when both files set one, Claude Code uses `plugin.json` and the validator reports the mismatch.
+
+When a new arena-mcp-server reaches npm, pin it in `.mcp.json` and `gemini-extension.json` (`arena-mcp-server@<version>`) and update the version where this README names it (the Claude plugin install note and "What the plugin runs and sends"). Never use `@latest` or a range there: the Claude directory refuses a plugin that runs an unpinned package. Pin only a version that is already on npm. Keep the plugin's `name` as `arena-predictions`: it is permanent once the plugin is listed.
+
+## What the plugin runs and sends
+
+The plugin has no hooks, agents, commands or install scripts. It holds the skill, which is instructions only, and one MCP server entry in [.mcp.json](.mcp.json):
+
+- **What runs.** `npx -y arena-mcp-server@0.5.0`, started by Claude Code or Cowork on your computer. On first run npx downloads that exact version of the package and its dependencies from the npm registry (registry.npmjs.org).
+- **What it reads on your computer.** Only Arena's own sign-in and settings: the sign-in that `arena login` stored (the OS keychain under the service `arena-cli`, or `~/.config/arena/credentials.json`, or the file named in `ARENA_CREDENTIALS_FILE`) and, if you have one, the CLI's settings file `~/.config/arena/config.json`. When the token expires it refreshes it and writes the new one back to the same place. It does not read your code, files, prompts or conversations.
+- **Where it sends requests.** Only to services Arena runs: arena-predictions.com, Arena's Supabase project (hslhripungvmkbvqsbni.supabase.co) and Arena's market-data proxy (bettr-kalshi-proxy.fly.dev). Each request carries the tool's parameters, your sign-in token when the tool needs your account, and a header naming the package and its version (`x-arena-client: mcp/0.5.0`). It has no analytics or telemetry.
+- **What it never does.** It never contacts Kalshi, Novig or Polymarket itself (Arena's servers fetch their prices), sends no order to any venue and moves no real money. The plugin sets no environment for the server, so it runs read-only: the paper-trade tools are registered only when `ARENA_MCP_ALLOW_TRADE=1` is set in the environment Claude runs in (the MCP server section above shows how to add a trading server yourself), and even then each trade needs `confirm: true`.
+- **Where tool results go.** Into your conversation with the AI model you use, under that provider's terms.
+
+The scripts in [examples/](examples/) call the `arena` CLI and run only when you run them.
+
+## Privacy Policy
+
+Arena's Privacy Policy is at https://arena-predictions.com/privacy. It covers the website, the iOS app, the `arena` CLI, the MCP server and the API. For this plugin, in short:
+
+- **What Arena collects.** When the MCP server or the CLI calls Arena, Arena receives your sign-in, the parameters of each request (for example the market, side, size and price of an order), your IP address and standard technical headers, and a header naming the package and its version. Your account holds your display name, email address and your paper trades, orders, positions and balances. The plugin does not read, upload or store your code, prompts, conversations, models or files.
+- **How Arena uses and stores it.** To sign you in, run your paper account, keep the service secure and fix problems. Arena stores account data with Supabase. Your sign-in token stays on your computer, in the OS keychain or a credentials file. Accounts are private by default: nobody else sees your trades or record until you make your profile public in Settings on the website, and nothing in this plugin can make it public.
+- **Who Arena shares it with.** Arena does not sell personal information. Service providers process data for Arena as the policy lists them, for example Supabase (sign-in and database), Fly.io (the market-data proxy) and Vercel (the website). Kalshi receives requests for market data, not your personal information.
+- **How long Arena keeps it.** While your account is active and as needed to run the service. You can delete your account in the iOS app or by emailing support@zbgcllc.com. Deletion removes your profile, trades, orders, balances, API keys and other account data, apart from the few records the policy names. `arena logout` signs the session out and removes the token from your computer.
+- **Contact.** ZBGC LLC, support@zbgcllc.com.
+
+Arena is not directed to anyone under 17.
 
 ## Docs
 

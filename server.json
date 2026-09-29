@@ -25,7 +25,7 @@
       "environmentVariables": [
         {
           "name": "ARENA_MCP_ALLOW_TRADE",
-          "description": "Set to 1 to register the paper-trade tools (place_trade, sell_trade, get_orders, cancel_order, settle_open). Any other value leaves trading off.",
+          "description": "Set to 1 to register the paper-trade tools (place_trade, sell_trade, cancel_order, settle_open). Any other value leaves trading off.",
           "isRequired": false,
           "format": "string",
           "choices": ["0", "1"],

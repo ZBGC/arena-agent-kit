@@ -4,12 +4,12 @@
     "name": "ZBGC LLC",
     "email": "support@zbgcllc.com"
   },
-  "description": "The Arena Predictions plugin for Claude Code: paper trade prediction markets at live prices.",
+  "description": "The Arena Predictions plugin for Claude: paper trade prediction markets at live prices, with no real money.",
   "plugins": [
     {
-      "name": "arena",
+      "name": "arena-predictions",
       "source": "./",
-      "description": "Paper trade prediction markets at live prices from Claude Code: the Arena MCP server and the arena-paper-trading skill."
+      "description": "Paper trade prediction markets at live prices with no real money: the Arena MCP server (read-only by default) and a skill for forward-testing trading bots and AI agents."
     }
   ]
 }

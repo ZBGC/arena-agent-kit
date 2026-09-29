@@ -1,13 +1,16 @@
 {
-  "name": "arena",
+  "name": "arena-predictions",
   "displayName": "Arena Predictions",
   "version": "0.5.0",
-  "description": "Paper trade prediction markets at live prices from Claude Code: the Arena MCP server and the arena-paper-trading skill.",
+  "description": "Paper trade prediction markets at live prices with no real money: the Arena MCP server (read-only by default) and a skill for forward-testing trading bots and AI agents.",
   "author": {
     "name": "ZBGC LLC",
-    "email": "support@zbgcllc.com"
+    "email": "support@zbgcllc.com",
+    "url": "https://arena-predictions.com"
   },
   "homepage": "https://arena-predictions.com/agents",
+  "repository": "https://github.com/ZBGC/arena-agent-kit",
+  "license": "MIT",
   "keywords": [
     "prediction-markets",
     "paper-trading",
@@ -17,6 +20,5 @@
     "mcp-server",
     "ai-agents",
     "cli"
-  ],
-  "license": "MIT"
+  ]
 }

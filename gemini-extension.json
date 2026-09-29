@@ -7,7 +7,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "arena-mcp-server"
+        "arena-mcp-server@0.5.0"
       ]
     }
   },

@@ -22,6 +22,8 @@ The `arena` CLI is the interface here; the MCP tools follow the same rules (see 
 
 ## Before anything else
 
+If the Arena MCP tools are available (for example `get_balance`), use them: "With the MCP server" at the end maps them to these commands. If you can run neither the `arena` CLI nor the Arena MCP tools, as in a chat with no terminal, say so and point the user to https://arena-predictions.com/agents to set one up. Never guess a price, balance or position.
+
 1. Run `arena`. It prints `signedIn`, the balance (`balance`; `dollars` before CLI 0.5.0), `openPositions` and a `help[]` list of next commands.
 2. If `arena` is not installed, the user runs `npm install -g arena-prediction-cli` (Node.js 20 or newer). The `instrument`, `game`, `games`, `chart`, `screener` and `stats` commands need arena-prediction-cli 0.3.0 or newer.
 3. If `signedIn: false`, ask the user to run `arena login`. It opens a browser, so you cannot do it for them. Signed out, only `arena leaderboard`, `arena trader <name>`, `arena resolve "<bet in words>"`, `arena instrument <ins_id>`, `arena game <game>`, `arena games`, `arena quotes <ins_id>` (0.3.1) and `arena gaps` (0.4.0) work.
