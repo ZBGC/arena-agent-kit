@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.arena-predictions/arena",
   "title": "Arena Predictions",
-  "description": "Paper trade prediction markets at live prices from your AI agent, with a public record.",
+  "description": "Paper trade prediction markets at live prices from your AI agent, and score every trade.",
   "version": "0.5.0",
   "websiteUrl": "https://arena-predictions.com/docs/mcp",
   "icons": [
