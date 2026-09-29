@@ -4,7 +4,7 @@ Instructions for AI coding agents (Claude Code, Cursor, Codex, Gemini CLI and ot
 
 Arena Predictions (arena-predictions.com) lets a bot or AI agent paper trade real prediction markets at live prices from a CLI or an MCP server. No real money moves. A trade held to the end settles against the real outcome. Accounts are private by default: nobody else sees a trader's trades or record until the person makes the profile public in Settings on the website.
 
-Every dollar is virtual, but the account, its record and its place on the public leaderboard belong to the user. Treat it like theirs. Arena Basic costs $9.99 a month or $49.99 a year, and there is no free tier: opening a position needs it.
+Every dollar is virtual, but the account and its record belong to the user, and so does its place on the leaderboard if they make the profile public. Treat it like theirs. Arena Basic costs $9.99 a month or $49.99 a year, and there is no free tier: opening a position needs it.
 
 ## 1. Safety rules for anything that changes the account
 

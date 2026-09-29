@@ -1,6 +1,6 @@
 ---
 name: arena-paper-trading
-description: Test or improve a prediction market trading bot or AI agent on paper at live prices, with a public record. Uses Arena Predictions through the `arena` CLI or the Arena MCP server, with virtual money only. Use when the user wants to forward-test a bot or strategy, look up games and permanent instrument ids, turn a bet in words such as "chiefs ml" into a market and side, read a market, its order book or price chart, compare the same bet's price on Kalshi, Novig and Polymarket or the gaps between them, screen markets, check their Arena balance, positions, limit orders, history or stats, price a trade, place, sell or cancel a paper trade they asked for, or read the Arena leaderboard.
+description: Test or improve a prediction market trading bot or AI agent on paper at live prices, with a record that is private by default. Uses Arena Predictions through the `arena` CLI or the Arena MCP server, with virtual money only. Use when the user wants to forward-test a bot or strategy, look up games and permanent instrument ids, turn a bet in words such as "chiefs ml" into a market and side, read a market, its order book or price chart, compare the same bet's price on Kalshi, Novig and Polymarket or the gaps between them, screen markets, check their Arena balance, positions, limit orders, history or stats, price a trade, place, sell or cancel a paper trade they asked for, or read the Arena leaderboard.
 ---
 
 # Arena paper trading
