@@ -39,7 +39,7 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`~/.cursor/mcp.json`):
 }
 ```
 
-**The Claude plugin.** It adds the MCP server (read-only) and the arena-paper-trading skill in one step. It runs an exact server version (`arena-mcp-server@0.5.0` in this release) and moves to the next one with each release of this kit. In Claude Code:
+**The Claude plugin.** It adds the MCP server, with paper trading off, and the arena-paper-trading skill in one step. It runs an exact server version (`arena-mcp-server@0.5.0` in this release) and moves to the next one with each release of this kit. In Claude Code:
 
 ```text
 /plugin marketplace add ZBGC/arena-agent-kit
@@ -60,7 +60,7 @@ npx skills add ZBGC/arena-agent-kit
 
 Or copy [skills/arena-paper-trading](skills/arena-paper-trading/) into `~/.claude/skills/` (all your projects) or `.claude/skills/` (one project).
 
-**Gemini CLI.** The extension adds the MCP server (read-only) and loads [AGENTS.md](AGENTS.md) as context:
+**Gemini CLI.** The extension adds the MCP server, with paper trading off, and loads [AGENTS.md](AGENTS.md) as context:
 
 ```bash
 gemini extensions install https://github.com/ZBGC/arena-agent-kit
@@ -143,7 +143,7 @@ arena-mcp-server 0.5.0 registers 21 tools by default, 8 of them signed out, and 
 | Trading (only with `ARENA_MCP_ALLOW_TRADE=1`) | `place_trade`, `sell_trade`, `cancel_order`, `settle_open` (and `get_orders` before 0.5.0) |
 | Reset (only with `ARENA_ALLOW_RESET=1`, 0.5.0) | `reset_account`: the agent shows you `get_balance` and asks first, then calls it with `confirm: "RESET"` and the run it read. |
 
-The server is read-only by default. To let an agent place paper trades, set `ARENA_MCP_ALLOW_TRADE=1` in the server's environment (`claude mcp add arena -e ARENA_MCP_ALLOW_TRADE=1 -- npx -y arena-mcp-server@latest`, or an `"env"` block in the JSON). The plugin and the Gemini extension run the server read-only. For trading, add the server by hand as above instead of through them. Each call that changes the account (`place_trade`, `sell_trade`, `cancel_order`, `settle_open`) also needs `confirm: true`. `place_trade` takes a `ticker` with a `side`, or an `instrument_id` with an `instrument_side`. From 0.4.0 `place_trade` and `sell_trade` also take `route` (`best`, the default, or `kalshi`) and `dry_run: true`, which answers where the trade would fill and places nothing. Call it first and show the person `fill_venue`, `price_cents`, `kalshi_price_cents` and `rule_note` before `confirm: true`. To hold what they saw, pass `max_price_cents` equal to the preview's `price_cents`, and `route: "kalshi"` when the preview named Kalshi. From 0.5.0 a retry with the same `idempotency_key` answers the trade already placed with `replayed: true`; the same key on a different order is refused with `idempotency_key_reused`.
+Paper trading is off by default. With it off, the only tool that changes anything is `set_privacy`, which only makes an account private. To let an agent place paper trades, set `ARENA_MCP_ALLOW_TRADE=1` in the server's environment (`claude mcp add arena -e ARENA_MCP_ALLOW_TRADE=1 -- npx -y arena-mcp-server@latest`, or an `"env"` block in the JSON). The plugin and the Gemini extension have no trading setting: for trading, add the server by hand as above instead of through them. Each call that changes the account (`place_trade`, `sell_trade`, `cancel_order`, `settle_open`) also needs `confirm: true`. `place_trade` takes a `ticker` with a `side`, or an `instrument_id` with an `instrument_side`. From 0.4.0 `place_trade` and `sell_trade` also take `route` (`best`, the default, or `kalshi`) and `dry_run: true`, which answers where the trade would fill and places nothing. Call it first and show the person `fill_venue`, `price_cents`, `kalshi_price_cents` and `rule_note` before `confirm: true`. To hold what they saw, pass `max_price_cents` equal to the preview's `price_cents`, and `route: "kalshi"` when the preview named Kalshi. From 0.5.0 a retry with the same `idempotency_key` answers the trade already placed with `replayed: true`; the same key on a different order is refused with `idempotency_key_reused`.
 
 `get_market` with `contracts` adds an estimated venue fee that paper fills do not pay. If an agent reports `get_instrument` or `get_my_stats` as an unknown tool, the server is older than 0.3.0. Update any copy you installed with npm, or change `arena-mcp-server` to `arena-mcp-server@latest` in the command, then restart your client.
 
@@ -181,7 +181,7 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 | [examples/daily-review/](examples/daily-review/) | A read-only script that prints your balance, positions and resting orders as one JSON document, plus a prompt that turns it into a review. |
 | [examples/limit-at-the-bid/](examples/limit-at-the-bid/) | A script that prices a limit buy at the current bid. It is a dry run unless you pass `--place`. |
 | [examples/agent-prompts.md](examples/agent-prompts.md) | Prompts to paste into Claude Code, Cursor or any agent that has the CLI or the MCP server. |
-| [.mcp.json](.mcp.json) | The plugin's MCP server: read-only, pinned to an exact server version. You can copy it. |
+| [.mcp.json](.mcp.json) | The plugin's MCP server: paper trading off, pinned to an exact server version. You can copy it. |
 | [assets/icon.png](assets/icon.png) | The Arena Predictions icon, 512 by 512. |
 | [server.json](server.json) | The server's entry for the official MCP registry. |
 | [llms.txt](llms.txt) | A copy of https://arena-predictions.com/llms.txt. The live file is the one to trust. |
@@ -199,7 +199,8 @@ The plugin has no hooks, agents, commands or install scripts. It holds the skill
 - **What runs.** `npx -y arena-mcp-server@0.5.0`, started by Claude Code or Cowork on your computer. On first run npx downloads that exact version of the package and its dependencies from the npm registry (registry.npmjs.org).
 - **What it reads on your computer.** Only Arena's own sign-in and settings: the sign-in that `arena login` stored (the OS keychain under the service `arena-cli`, or `~/.config/arena/credentials.json`, or the file named in `ARENA_CREDENTIALS_FILE`) and, if you have one, the CLI's settings file `~/.config/arena/config.json`. When the token expires it refreshes it and writes the new one back to the same place. It does not read your code, files, prompts or conversations.
 - **Where it sends requests.** Only to services Arena runs: arena-predictions.com, Arena's Supabase project (hslhripungvmkbvqsbni.supabase.co) and Arena's market-data proxy (bettr-kalshi-proxy.fly.dev). Each request carries the tool's parameters, your sign-in token when the tool needs your account, and a header naming the package and its version (`x-arena-client: mcp/0.5.0`). It has no analytics or telemetry.
-- **What it never does.** It never contacts Kalshi, Novig or Polymarket itself (Arena's servers fetch their prices), sends no order to any venue and moves no real money. The plugin sets no environment for the server, so it runs read-only: the paper-trade tools are registered only when `ARENA_MCP_ALLOW_TRADE=1` is set in the environment Claude runs in (the MCP server section above shows how to add a trading server yourself), and even then each trade needs `confirm: true`.
+- **What it never does.** It never contacts Kalshi, Novig or Polymarket itself (Arena's servers fetch their prices), sends no order to any venue and moves no real money.
+- **What it can change.** The plugin sets no environment for the server and has no trading setting, so paper trading is off. The only tool that changes anything is `set_privacy`, which only makes your account private. Claude Code passes its own environment to the servers it starts, so if `ARENA_MCP_ALLOW_TRADE=1` is already set in the shell you start Claude Code from, the paper-trade tools appear here too; leave it unset to keep them out. To trade, add a server yourself as the MCP server section above shows. Each paper trade needs `confirm: true`.
 - **Where tool results go.** Into your conversation with the AI model you use, under that provider's terms.
 
 The scripts in [examples/](examples/) call the `arena` CLI and run only when you run them.

@@ -9,7 +9,7 @@
     {
       "name": "arena-predictions",
       "source": "./",
-      "description": "Paper trade prediction markets at live prices with no real money: the Arena MCP server (read-only by default) and a skill for forward-testing trading bots and AI agents."
+      "description": "Paper trade prediction markets at live prices with no real money: the Arena MCP server (paper trading off by default) and a skill for forward-testing trading bots and AI agents."
     }
   ]
 }

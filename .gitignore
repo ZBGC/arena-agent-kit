@@ -7,3 +7,7 @@ node_modules/
 * [0-9][0-9]
 * [0-9].*
 * [0-9][0-9].*
+# Claude Desktop bundles (arena.mcpb) are about 5 MB and this folder is the
+# Claude plugin, where every file must be under 5 MiB. Host a bundle as a
+# release attachment or on arena-predictions.com, never in the repo.
+*.mcpb
