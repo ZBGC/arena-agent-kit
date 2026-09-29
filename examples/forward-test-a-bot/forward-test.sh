@@ -5,11 +5,15 @@
 #   1. arena games --limit 20                                  (signed out is fine)
 #   2. arena game <game_id>                                    (the next game that has not finished)
 #   3. arena buy <ins_id> --side yes --contracts 1 --dry-run   (the game's first instrument)
-#   4. arena stats                                             (your season, graded)
+#   4. arena stats                                             (your trading, graded)
 #
 # Step 2 takes the first listed game that is scheduled or under way and has
 # instruments, and prefers one that has not started. It never takes a finished,
 # postponed or cancelled game. If there is none, the script says so and exits 0.
+#
+# Steps 1 and 2 print one line each on stderr (the game picked, and how many
+# instruments it has); the full JSON only goes to your bot. Set
+# FORWARD_TEST_VERBOSE=1 to print that JSON too.
 #
 # Step 3 is a DRY RUN: it prices the trade and places nothing. Only --live
 # places it, as a paper trade on your account.
@@ -132,13 +136,25 @@ run() {
 #   pick_game:  the first game that is scheduled or under way and has instruments,
 #               preferring one that has not started; empty when there is none
 #   pick_first: "<first instrument_id> yes 1"
+#   game_line:  one line about the game $PICKED (away at home, start)
+#   ins_line:   how many instruments the game has, and the first one's id and label
 json_pick() {
   node -e '
 let text = "";
 process.stdin.on("data", (chunk) => { text += chunk; });
 process.stdin.on("end", () => {
   const doc = JSON.parse(text);
-  if (process.argv[1] === "pick_game") {
+  if (process.argv[1] === "game_line") {
+    const games = Array.isArray(doc.games) ? doc.games : [];
+    const g = games.find((x) => x.game_id === process.env.PICKED) ?? {};
+    process.stdout.write(`${g.game_id ?? "?"}: ${g.away ?? "?"} at ${g.home ?? "?"}, ${g.starts_at ?? "?"}, ${g.status ?? "?"}`);
+  } else if (process.argv[1] === "ins_line") {
+    const game = doc.game ?? {};
+    const list = Array.isArray(game.instruments) ? game.instruments
+      : Array.isArray(doc.instruments) ? doc.instruments : [];
+    const first = list.find((i) => typeof i.instrument_id === "string");
+    process.stdout.write(`${list.length} instruments` + (first ? `; first: ${first.instrument_id} ${first.label ?? ""}`.trimEnd() : ""));
+  } else if (process.argv[1] === "pick_game") {
     const games = Array.isArray(doc.games) ? doc.games : [];
     const open = games.filter((g) =>
       (g.status === "scheduled" || g.status === "inprogress") && Number(g.instrument_count) > 0);
@@ -167,14 +183,17 @@ else
   [ -n "$league" ] && games_cmd+=(--league "$league")
   say "step 1: arena ${games_cmd[*]}"
   games_json="$(run "${games_cmd[@]}" --json)"
-  printf '%s\n' "$games_json"
+  if [ "${FORWARD_TEST_VERBOSE:-0}" = "1" ]; then printf '%s\n' "$games_json"; fi
   game_id="$(json_pick pick_game <<< "$games_json")" || fail "could not read the games list" 1
   [ -n "$game_id" ] || fail "no scheduled ${league:-nfl} game to test on in the next 20 listed. Try again closer to game day." 0
+  say "picked $(PICKED="$game_id" json_pick game_line <<< "$games_json")"
 
-  # 2. Every instrument on that game (read-only, works signed out).
+  # 2. Every instrument on that game (read-only, works signed out). The full
+  #    JSON goes to the bot; the terminal gets one line.
   say "step 2: arena game $game_id"
   game_json="$(run game "$game_id" --json)"
-  printf '%s\n' "$game_json"
+  if [ "${FORWARD_TEST_VERBOSE:-0}" = "1" ]; then printf '%s\n' "$game_json"; fi
+  say "$(json_pick ins_line <<< "$game_json")"
 
   # 3. The bot's decision. Replace the default with --bot. No pipes here: under
   #    pipefail, a bot that ignores stdin or prints a lot would fail the script.
@@ -222,6 +241,6 @@ else
   fi
 fi
 
-# 4. The season so far, graded (read-only).
+# 4. Your trading so far, graded (read-only).
 say "step 4: arena stats"
 run stats

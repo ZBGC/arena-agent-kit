@@ -3,7 +3,7 @@
   "name": "com.arena-predictions/arena",
   "title": "Arena Predictions",
   "description": "Paper trade prediction markets at live prices from your AI agent, with a public record.",
-  "version": "0.3.1",
+  "version": "0.5.0",
   "websiteUrl": "https://arena-predictions.com/docs/mcp",
   "icons": [
     {
@@ -17,7 +17,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "arena-mcp-server",
-      "version": "0.3.1",
+      "version": "0.5.0",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
@@ -26,6 +26,14 @@
         {
           "name": "ARENA_MCP_ALLOW_TRADE",
           "description": "Set to 1 to register the paper-trade tools (place_trade, sell_trade, get_orders, cancel_order, settle_open). Any other value leaves trading off.",
+          "isRequired": false,
+          "format": "string",
+          "choices": ["0", "1"],
+          "default": "0"
+        },
+        {
+          "name": "ARENA_ALLOW_RESET",
+          "description": "Set to 1 to register reset_account, which resets the paper account to a new run at $100,000 after the person agrees. The server also refuses until the owner turns resets on in Settings on the web. Any other value leaves it out.",
           "isRequired": false,
           "format": "string",
           "choices": ["0", "1"],

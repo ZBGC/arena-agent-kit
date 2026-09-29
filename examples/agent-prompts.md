@@ -7,8 +7,8 @@ Arena is paper trading, so nothing here can spend real money. The prompts still 
 ## First session
 
 ```text
-I have the Arena CLI installed as `arena`. Run `arena` on its own and tell me my balance,
-how many positions I have open and which season it is. If I am not signed in, tell me to
+I have the Arena CLI installed as `arena`. Run `arena` on its own and tell me my balance
+and how many positions I have open. If I am not signed in, tell me to
 run `arena login` and stop. Do not place, sell or cancel anything.
 ```
 
@@ -40,6 +40,15 @@ instruments: label, instrument_id, market type and line. For the moneylines, run
 0.3.0 or newer.
 ```
 
+## Compare venues (no sign-in needed)
+
+```text
+Run `arena quotes "<bet in words>"` and show me each venue's price for YES, with its time and
+its note. Then run `arena gaps "<bet in words>"` and show me each pair's cost after fees and
+why it is or is not labelled arbitrage, word for word. Read-only. Needs arena-prediction-cli
+0.4.0 or newer.
+```
+
 ## Forward-test my bot
 
 ```text
@@ -62,7 +71,7 @@ and `arena orders` instead of running it again.
 ```
 
 ```text
-Grade my bot's trading this season with `arena stats --by band`. Tell me where my win rate beats
+Grade my bot's trading with `arena stats --by band`. Tell me where my win rate beats
 the prices I paid and where it does not, using the calibration table. Say how many trades are
 graded, and do not draw conclusions from a band with fewer than 10 trades. Read-only.
 ```
@@ -72,8 +81,8 @@ graded, and do not draw conclusions from a band with fewer than 10 trades. Read-
 ```text
 Price a buy of <N> YES contracts on <ticker> with
 `arena buy <ticker> --side yes --contracts <N> --dry-run`.
-Tell me the ask, the bid, the stake in dollars and what it pays if it wins.
-Do not run it with --yes until I reply "place it".
+Tell me the venue it would fill on, the price, Kalshi's ask and bid, the stake in dollars
+and what it pays if it wins. Do not run it with --yes until I reply "place it".
 ```
 
 ```text
@@ -134,4 +143,4 @@ Show me the exact place_trade arguments first. Only call it, with confirm: true 
 UUID idempotency_key, after I say "go".
 ```
 
-The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer. `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets` and `get_my_stats` need 0.3.0 or newer.
+The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer. `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets` and `get_my_stats` need 0.3.0 or newer. `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need 0.4.0 or newer; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.
