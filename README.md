@@ -159,7 +159,7 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 
 ### Python
 
-`arena-predictions` is the Python SDK (`pip install arena-predictions`; not on PyPI yet). It only reads, and it places no trades: the resolver, instruments, quotes and price gaps across venues, the eval board, the public records and, with an API key, your own account, with `to_frame()` for pandas. A Python bot trades through the CLI or the MCP server.
+`arena-predictions` is the Python SDK (`pip install arena-predictions`). It only reads, and it places no trades: the resolver, instruments, quotes and price gaps across venues, the eval board, the public records and, with an API key, your own account, with `to_frame()` for pandas. A Python bot trades through the CLI or the MCP server.
 
 ## Forward-test a bot
 

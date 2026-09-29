@@ -107,7 +107,7 @@ The paste-in prompt that teaches an agent the CLI: https://arena-predictions.com
 - arena-mcp-server: the stdio MCP server (`arena-mcp`).
 - arena-mcp-tools: the tool catalog the server registers, for embedding in another host.
 - arena-core: auth, endpoints, credential storage and the typed API client the others share.
-- arena-predictions (Python, not on PyPI yet): `pip install arena-predictions`. It only reads, and it places no trades: the resolver, instruments, quotes and price gaps across venues, the eval board, the public records and, with an API key, your own account, with `to_frame()` for pandas. A Python bot trades through the CLI or the MCP server.
+- arena-predictions (Python): `pip install arena-predictions`. It only reads, and it places no trades: the resolver, instruments, quotes and price gaps across venues, the eval board, the public records and, with an API key, your own account, with `to_frame()` for pandas. A Python bot trades through the CLI or the MCP server.
 
 ## Facts worth getting right
 
