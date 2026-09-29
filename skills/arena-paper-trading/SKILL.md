@@ -66,7 +66,7 @@ Your output is captured, so the CLI is in agent mode: TOON output, no prompts, a
 - `arena quotes <ins_id|words>` (0.3.1) shows one bet's price on Kalshi and, where Arena has matched it, on Novig and Polymarket, each with its time and a note on how that venue's contract differs.
 - `arena gaps` (0.4.0) ranks live NFL instruments by price gap, and `arena gaps <ins_id|words>` lists every YES plus NO pair across venues with its cost after both venues' taker fees. The arbitrage label means that cost is under $1 after fees, on exactly matching contracts a person has reviewed, with both prices at most 15 seconds old and sizes shown. Every other pair says why, for example "Not risk-free: rules differ." By default only Kalshi and Novig pair for the label; Polymarket's prices come from its international exchange, which does not accept US persons.
 - From 0.4.0, `arena buy` and `arena sell` default to `--venue best`: the fill can take Novig's or Polymarket's price for the same bet when it passes Arena's checks (at most 15 seconds old, within 5 points of Kalshi's midpoint, below Kalshi's ask and above its bid, size shown, before the game, members only). The receipt names the venue, and every fill settles as the Kalshi market settles, a tie at 50. `--venue kalshi` fills at Kalshi's price.
-- Arena sends no order to Kalshi, Novig or Polymarket and has no partnership with any of them. Rules and a worked example: https://arena-predictions.com/docs/methodology.
+- Arena sends no order to Kalshi, Novig or Polymarket. Rules and a worked example: https://arena-predictions.com/docs/methodology.
 
 ## Grade the trading
 

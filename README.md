@@ -88,7 +88,7 @@ Arena shows the same bet's price on Kalshi and, where it has matched the bet, on
 
 From 0.4.0, `arena buy` and `arena sell` take `--venue best|kalshi`, and `place_trade` and `sell_trade` take `route` and `dry_run`. With best, the default, a paper fill can take Novig's or Polymarket's price for the same bet when it passes Arena's checks: at most 15 seconds old, within 5 points of Kalshi's midpoint, below Kalshi's ask and above Kalshi's bid, with the size shown, before the game starts. Routing is for Arena Basic members. Every receipt names the venue, and every fill settles as the Kalshi market settles. `--venue kalshi` or `route: "kalshi"` fills at Kalshi's price, which is what a bot that models Kalshi's book alone should pass. The iPhone app fills at Kalshi's price.
 
-Arena is paper trading. It sends no order to Kalshi, Novig or Polymarket and has no partnership with any of them. The rules, the fees and a worked example: https://arena-predictions.com/docs/methodology.
+Arena is paper trading. It sends no order to Kalshi, Novig or Polymarket. The rules, the fees and a worked example: https://arena-predictions.com/docs/methodology.
 
 ## Balance and resets
 
@@ -133,7 +133,7 @@ arena-mcp-server 0.5.0 registers 21 tools by default, 8 of them signed out, and 
 | Group | Tools |
 |---|---|
 | Public records and lookups (signed out) | `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games` |
-| Prices on other venues (signed out) | `get_cross_venue_quotes`: one instrument's price on Kalshi and, while Arena shows them, on Novig and Polymarket. `find_price_gaps`: the gaps between them after each venue's fees. Arena does not route orders to Kalshi, Novig or Polymarket and has no partnership with any of them. |
+| Prices on other venues (signed out) | `get_cross_venue_quotes`: one instrument's price on Kalshi and, while Arena shows them, on Novig and Polymarket. `find_price_gaps`: the gaps between them after each venue's fees. Arena does not route orders to Kalshi, Novig or Polymarket. |
 | Your account (needs `arena login`) | `get_positions`, `get_balance`, `get_history`, `get_my_stats`, `get_orders` (0.5.0; read-only, so trading need not be on) |
 | Markets (needs `arena login`) | `list_markets`, `search_markets`, `get_market`, `get_orderbook`, `get_price_history`, `screen_markets` |
 | Trading (only with `ARENA_MCP_ALLOW_TRADE=1`) | `place_trade`, `sell_trade`, `cancel_order`, `settle_open` (and `get_orders` before 0.5.0) |
