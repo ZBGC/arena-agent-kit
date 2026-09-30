@@ -10,7 +10,7 @@
                                                      # places exactly the trade a dry run quoted
 ```
 
-It needs the `arena` CLI 0.3.0 or newer (`npm install -g arena-prediction-cli`). Steps 1 and 2 work signed out. Pricing a trade and reading stats need `arena login`, and placing one needs an Arena Basic membership ($9.99 a month or $49.99 a year; there is no free tier).
+It needs the `arena` CLI 0.3.0 or newer (`npm install -g arena-prediction-cli`). Steps 1 and 2 work signed out. Pricing a trade and reading stats need `arena login`, and placing one needs Arena Basic ($9.99 a month or $49.99 a year; paper trading needs it past one free pick a day).
 
 ## Forward testing, not backtesting
 
