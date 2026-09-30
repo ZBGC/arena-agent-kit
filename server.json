@@ -3,13 +3,19 @@
   "name": "com.arena-predictions/arena",
   "title": "Arena Predictions",
   "description": "Paper trade prediction markets at live prices from your AI agent, and score every trade.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "websiteUrl": "https://arena-predictions.com/docs/mcp",
   "icons": [
     {
       "src": "https://arena-predictions.com/icon.png",
       "mimeType": "image/png",
       "sizes": ["512x512"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://arena-predictions.com/mcp"
     }
   ],
   "packages": [

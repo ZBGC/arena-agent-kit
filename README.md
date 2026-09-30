@@ -4,7 +4,7 @@ Arena Predictions (arena-predictions.com) lets a bot or AI agent paper trade rea
 
 This kit is for people who build trading bots and AI agents and want to forward-test them at live prices, with a record that stays private unless they make it public, before they risk real money. It holds the instructions an agent follows, an agent skill, a Claude Code plugin, a Gemini CLI extension and small examples for the `arena` command line and the Arena MCP server.
 
-- **Price:** Arena Basic costs $9.99 a month or $49.99 a year. There is no free tier. Opening a paper position needs Arena Basic; the signed-out lookups below do not.
+- **Price:** Arena Basic costs $9.99 a month or $49.99 a year, and paper trading needs it past one free pick a day. The signed-out lookups below do not.
 - **Limits:** paper money only; only the markets Arena lists; no orders are sent to any exchange; there is no contract limit, so your balance is the only limit on size (one trade records at most 1,000,000,000 contracts); a fill is at one displayed price for the whole size, with no fee charged; API keys are read-only; and the text-to-ticker resolver covers full-game lines in the NFL, college football, MLB, the NHL, the NBA and the Premier League only. Arena forward-tests at live prices. It does not backtest today.
 - **Not to be confused with:** Meta's reported Arena app, Prediction Arena (predictionarena.ai), the Prediction Arena benchmark paper (arXiv 2604.07355), LMArena or Are.na. Arena Predictions is not affiliated with any of them.
 
@@ -70,7 +70,7 @@ Or copy [skills/arena-paper-trading](skills/arena-paper-trading/) into `~/.claud
 gemini extensions install https://github.com/ZBGC/arena-agent-kit
 ```
 
-The plugin, the skill and the extension install from this GitHub repository, so they need it to be public. The plugin, the extension and the MCP server reuse the login from `arena login`, so install the CLI and sign in first. Only the eight signed-out tools answer without it.
+The plugin, the skill and the extension install from this GitHub repository, so they need it to be public. The plugin, the extension and the local MCP server reuse the login from `arena login`, so install the CLI and sign in first. On the published local server (npm 0.5.0), the eight signed-out tools answer without that login. The hosted server's tool list is separate and shows what is on.
 
 ## Try signed out
 
@@ -138,7 +138,7 @@ Give your agent [AGENTS.md](AGENTS.md), or paste https://arena-predictions.com/a
 
 The hosted server at `https://arena-predictions.com/mcp` (above) needs no install and no CLI login for its signed-out tools. The local server below reuses `arena login` and has every tool.
 
-arena-mcp-server 0.5.0 registers 21 tools by default, 8 of them signed out, and 25 with trading on (`get_privacy` and `set_privacy` among them: `set_privacy` only makes an account private). This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools, 0.3.1 or newer for `get_cross_venue_quotes`, 0.4.0 or newer for `find_price_gaps` and for `route` and `dry_run` on the trade tools, and 0.5.0 or newer for the run and lifetime P&L on `get_balance`, `window` and `kind` on `get_leaderboard`, and `reset_account`. 0.5.0 is on npm (0.4.0 was not published separately).
+arena-mcp-server 0.5.0, the version on npm, registers 21 tools by default, 8 of them signed out, and 25 with trading on (`get_privacy` and `set_privacy` among them: `set_privacy` only makes an account private). This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools, 0.3.1 or newer for `get_cross_venue_quotes`, 0.4.0 or newer for `find_price_gaps` and for `route` and `dry_run` on the trade tools, and 0.5.0 or newer for the run and lifetime P&L on `get_balance`, `window` and `kind` on `get_leaderboard`, and `reset_account`. 0.5.0 is on npm (0.4.0 was not published separately). CLI and MCP 0.6.0 (API keys, `list_api_keys`, `revoke_api_key`, and the rate-limit exit codes in [llms.txt](llms.txt)) are documented and not on npm yet. This repository does not publish them.
 
 | Group | Tools |
 |---|---|
@@ -188,21 +188,65 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 | [examples/limit-at-the-bid/](examples/limit-at-the-bid/) | A script that prices a limit buy at the current bid. It is a dry run unless you pass `--place`. |
 | [examples/agent-prompts.md](examples/agent-prompts.md) | Prompts to paste into Claude Code, Cursor or any agent that has the CLI or the MCP server. |
 | [.mcp.json](.mcp.json) | A read-only MCP server config you can copy. The plugin uses it too. |
-| [server.json](server.json) | The server's entry for the official MCP registry. |
+| [server.json](server.json) | The server's entry for the official MCP registry, including the hosted remote at `https://arena-predictions.com/mcp`. |
 | [llms.txt](llms.txt) | A copy of https://arena-predictions.com/llms.txt. The live file is the one to trust. |
 
 ### Releasing a change
 
-Claude Code sends an update to people who installed the plugin only when `version` in `.claude-plugin/plugin.json` changes. New commits with the same version do not reach them. So a change to `skills/`, `.mcp.json`, `AGENTS.md` or `llms.txt` ships with a version bump, for example 0.3.0 to 0.3.1, made in both `.claude-plugin/plugin.json` and `gemini-extension.json` so the two stay the same. Keep `version` out of `marketplace.json`: when both files set one, Claude Code uses `plugin.json` and the validator reports the mismatch.
+Claude Code sends an update to people who installed the plugin only when `version` in `.claude-plugin/plugin.json` changes. New commits with the same version do not reach them. So a change to `skills/`, `.mcp.json`, `AGENTS.md` or `llms.txt` ships with a version bump, for example 0.5.0 to 0.5.1, made in both `.claude-plugin/plugin.json` and `gemini-extension.json` so the two stay the same. Keep `version` out of `marketplace.json`: when both files set one, Claude Code uses `plugin.json` and the validator reports the mismatch.
+
+This kit's plugin and Gemini extension are at 0.5.1. That number is the kit. It is not an npm release.
+
+### npm 0.6.0
+
+Gustavo publishes npm. This repository has no `package.json` for `arena-prediction-cli`, `arena-mcp-server`, `arena-core` or `arena-mcp-tools`, and it does not contain that source, so nothing here is set to 0.6.0. npm still serves 0.5.0 of each of those packages. The hosted MCP server reports its own build version; that string is not an npm publish.
+
+On the packages that are on npm today, `homepage` is `https://arena-predictions.com/docs`. That path redirects to the HTTP API site at `https://docs.arena-predictions.com`, and a fragment on it (the published CLI README uses `https://arena-predictions.com/docs#cli-install`) never opens the CLI page. `repository` is unset. On the 0.6.0 publish, set `package.json` like this and leave the version bump in those packages to that publish:
+
+| Package | `homepage` | Also set |
+|---|---|---|
+| `arena-prediction-cli` | `https://arena-predictions.com/docs/cli` | `repository.url` `git+https://github.com/ZBGC/arena-agent-kit.git`, `repository.type` `git`, `bugs.url` `https://github.com/ZBGC/arena-agent-kit/issues`. In the package README, link docs at `https://arena-predictions.com/docs/cli#cli-install`. |
+| `arena-mcp-server` | `https://arena-predictions.com/docs/mcp` | The same `repository` and `bugs`. In the package README, link docs at `https://arena-predictions.com/docs/mcp`. |
+| `arena-core`, `arena-mcp-tools` | `https://arena-predictions.com/docs/cli` | The same `repository` and `bugs`. Their homepage is the redirecting `/docs` URL today. |
+| `arena-predictions` (PyPI) | `https://arena-predictions.com/docs/python` | Set the Documentation project URL to that page. It is `https://arena-predictions.com/docs` today. |
+
+`https://arena-predictions.com/agents` is the right homepage when a package is about the agent workflow rather than one docs page.
+
+### Official MCP registry
+
+`server.json` is what gets published as `com.arena-predictions/arena`. Registry versions are immutable, and `0.5.0` is already the live entry, so this file is `0.5.1`: the npm pin stays `arena-mcp-server` `0.5.0` (that version exists; `0.6.0` does not), and `remotes` adds the hosted Streamable HTTP server at `https://arena-predictions.com/mcp`. `websiteUrl` stays `https://arena-predictions.com/docs/mcp`.
+
+After this pull request is merged, from a checkout of it, publish with the DNS login this namespace already uses. Command reference: https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/cli/commands.md
+
+```bash
+mcp-publisher login dns --domain arena-predictions.com --private-key <hex-private-key>
+mcp-publisher publish
+```
+
+Skip the login line when `mcp-publisher` already has a token for `com.arena-predictions`. GitHub login only covers an `io.github.*` name. Confirm the new latest entry shows `remotes[0].url` of `https://arena-predictions.com/mcp`:
+
+```bash
+curl -sS "https://registry.modelcontextprotocol.io/v0.1/servers/com.arena-predictions%2Farena/versions/latest"
+```
+
+When npm `arena-mcp-server@0.6.0` exists, set both `version` and `packages[0].version` in `server.json` to `0.6.0` and run `mcp-publisher publish` again. Publishing `0.5.1` again will be refused as a duplicate version.
 
 ## Docs
 
+These pages stay on `arena-predictions.com` and keep a `#fragment`. The path `https://arena-predictions.com/docs` (and `https://arena-predictions.com/docs/api`) redirects to the HTTP API site, so `https://arena-predictions.com/docs#sdks` and `https://arena-predictions.com/docs#cli-install` do not open those sections.
+
 - For bots and AI agents: https://arena-predictions.com/agents
 - CLI: https://arena-predictions.com/docs/cli
+- Install section: https://arena-predictions.com/docs/cli#cli-install
+- Package versions: https://arena-predictions.com/docs/cli#sdks
 - MCP server: https://arena-predictions.com/docs/mcp
+- Agent contract: https://arena-predictions.com/docs/agents
 - Instrument ids: https://arena-predictions.com/docs/instruments
 - How Arena fills, grades and ranks: https://arena-predictions.com/docs/execution
+- Eval board: https://arena-predictions.com/docs/execution#eval
 - How Arena compares prices across venues: https://arena-predictions.com/docs/methodology
+- Python SDK: https://arena-predictions.com/docs/python
+- HTTP API: https://docs.arena-predictions.com
 - For language models: https://arena-predictions.com/llms.txt
 - Paste-in agent prompt: https://arena-predictions.com/agent.txt
 - Help and bug reports: https://arena-predictions.com/support

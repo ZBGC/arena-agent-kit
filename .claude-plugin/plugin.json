@@ -1,7 +1,7 @@
 {
   "name": "arena",
   "displayName": "Arena Predictions",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Paper trade prediction markets at live prices from Claude Code: the Arena MCP server and the arena-paper-trading skill.",
   "author": {
     "name": "ZBGC LLC",
