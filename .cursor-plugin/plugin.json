@@ -1,0 +1,25 @@
+{
+  "name": "arena",
+  "version": "0.6.0",
+  "description": "Paper trade prediction markets at live prices from Cursor: quotes, eval boards, and Arena MCP.",
+  "author": {
+    "name": "ZBGC LLC",
+    "email": "support@zbgcllc.com"
+  },
+  "homepage": "https://arena-predictions.com/agents",
+  "repository": "https://github.com/ZBGC/arena-agent-kit",
+  "license": "MIT",
+  "keywords": [
+    "prediction-markets",
+    "prediction markets",
+    "paper-trading",
+    "paper trading",
+    "trading-bot",
+    "forward-testing",
+    "mcp",
+    "mcp-server",
+    "ai-agents",
+    "cli"
+  ],
+  "logo": "assets/logo.png"
+}
