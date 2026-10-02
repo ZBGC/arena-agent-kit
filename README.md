@@ -2,7 +2,7 @@
 
 Arena Predictions (arena-predictions.com) lets a bot or AI agent paper trade real prediction markets at live prices from a CLI or an MCP server. No real money moves. A trade held to the end settles against the real outcome. Accounts are private by default: nobody else sees a trader's trades or record until the person makes the profile public in Settings on the website.
 
-This kit is for people who build trading bots and AI agents and want to forward-test them at live prices, with a record that stays private unless they make it public, before they risk real money. It holds the instructions an agent follows, an agent skill, a Claude Code plugin, a Gemini CLI extension and small examples for the `arena` command line and the Arena MCP server.
+This kit is for people who build trading bots and AI agents and want to forward-test them at live prices, with a record that stays private unless they make it public, before they risk real money. It holds the instructions an agent follows, agent skills, a Claude Code plugin, a Cursor plugin scaffold, a Gemini CLI extension and small examples for the `arena` command line and the Arena MCP server.
 
 - **Price:** Arena Basic costs $9.99 a month or $49.99 a year, and paper trading needs it past one free pick a day. The signed-out lookups below do not.
 - **Limits:** paper money only; only the markets Arena lists; no orders are sent to any exchange; there is no contract limit, so your balance is the only limit on size (one trade records at most 1,000,000,000 contracts); a fill is at one displayed price for the whole size, with no fee charged; API keys are read-only; and the text-to-ticker resolver covers full-game lines in the NFL, college football, MLB, the NHL, the NBA and the Premier League only. Arena forward-tests at live prices. It does not backtest today.
@@ -69,6 +69,8 @@ Or copy [skills/arena-paper-trading](skills/arena-paper-trading/) into `~/.claud
 ```bash
 gemini extensions install https://github.com/ZBGC/arena-agent-kit
 ```
+
+**Cursor.** The plugin scaffold in this repo is described in [CURSOR-PLUGIN.md](CURSOR-PLUGIN.md). It is not submitted to a marketplace.
 
 The plugin, the skill and the extension install from this GitHub repository, so they need it to be public. The plugin, the extension and the local MCP server reuse the login from `arena login`, so install the CLI and sign in first. On the published local server (npm 0.5.0), the eight signed-out tools answer without that login. The hosted server's tool list is separate and shows what is on.
 
@@ -183,6 +185,7 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 | [skills/arena-paper-trading/SKILL.md](skills/arena-paper-trading/SKILL.md) | The same workflow as an agent skill. |
 | [.claude-plugin/](.claude-plugin/) | The Claude Code plugin (`plugin.json`) and its marketplace (`marketplace.json`). |
 | [gemini-extension.json](gemini-extension.json) | The Gemini CLI extension. |
+| [CURSOR-PLUGIN.md](CURSOR-PLUGIN.md) | The Cursor plugin scaffold (name `arena`, hosted MCP). Marketplace submission is not done. |
 | [examples/forward-test-a-bot/](examples/forward-test-a-bot/) | A script that forward-tests a bot's pick at live prices. It is a dry run unless you pass `--live`. |
 | [examples/daily-review/](examples/daily-review/) | A read-only script that prints your balance, positions and resting orders as one JSON document, plus a prompt that turns it into a review. |
 | [examples/limit-at-the-bid/](examples/limit-at-the-bid/) | A script that prices a limit buy at the current bid. It is a dry run unless you pass `--place`. |
