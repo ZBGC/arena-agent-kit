@@ -43,6 +43,7 @@ Every order is a paper order, in paper dollars, unless the user asks for a live 
 - With a day word that matches nothing ("jets ml tonight" on a night off), `arena resolve` answers no rows (`count: 0`) with an `emptyReason` and `withoutDay`, the next game the words name without the day. From 0.6.0 `arena quotes`, `market` and `buy` exit 6 `not_found` with that game in `error.details.withoutDay`, and `help[0]` is the same command on its id. Nothing is changed silently.
 - `arena games` lists games with their ids (from 0.6.0, today's slate in every league with each team's chance); `arena game <game>` lists every instrument on one game; `arena instrument <ins_id>` says what YES means and which ticker holds it.
 - With an instrument id, `--side` is the instrument's side, and the CLI maps it to the ticker's side and shows both.
+- A market outside those six leagues: `arena search "<text>"` searches markets by text and `arena markets` lists tradeable markets (`--sport`, `--league` or `--event` narrows it), each row with its Kalshi ticker, and `arena market <ticker>` shows one market's buy and sell prices. `arena search` and `arena markets` need `arena login`, and so does `arena market` on a ticker Arena lists no instrument on.
 
 ## 6. Price and trade
 
