@@ -32,6 +32,6 @@ If the script exits 4, tell me to run `arena login` and stop.
 | `generatedAt` | the script | UTC time of the snapshot |
 | `balance` | `arena balance --json` | `balance` (spendable), `netWorth`, `openStake`, `holds`, `pnlSinceReset`, `lifetimePnl`, `run` (CLI 0.5.0; older CLIs: `dollars`, `openStakeDollars`, `heldOrderDollars`, `netWorthDollars`) |
 | `positions` | `arena positions --live --json` | `positions[]` (each with `id`, `market_ticker`, `market_title`, `side`, `contracts`, `entry_price_cents`, `markPriceCents`, `unrealizedPnlDollars`), `openPositions`, `totalCount` |
-| `restingOrders` | `arena orders --status resting --json` | one entry per resting limit order: `id`, `market_ticker`, `action`, `side`, `limit_price_cents`, `remaining_count`, `hold_dollars`, `expires_at` |
+| `restingOrders` | `arena orders --status resting --json` | `orders[]`, one entry per resting limit order (`id`, `market_ticker`, `action`, `side`, `limit_price_cents`, `remaining_count`, `hold_dollars`, `expires_at`), with `totalCount` and `heldDollars` (CLI 0.5.0; older CLIs: the list itself) |
 
 Money is paper dollars. Prices are whole cents from 1 to 99.

@@ -2,7 +2,7 @@
 
 Prompts to paste into Claude Code, Cursor or any coding agent that can run the `arena` CLI or has the Arena MCP server. Replace anything in angle brackets.
 
-Arena is paper trading, so nothing here can spend real money. The prompts still tell the agent to ask before it changes your account, because the positions and the record are yours.
+Every prompt here is for paper trading, in paper dollars. None asks for a live order, and none adds `--live` or `--poly-intl`. From CLI 0.6.0 those flags send a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The prompts still tell the agent to ask before it changes your account, because the positions and the record are yours.
 
 ## First session
 
@@ -62,9 +62,11 @@ the side, contracts, price, stake and the estimated venue fee (not charged on pa
 summarize `arena stats`: graded trades, win rate against the prices paid, closing-line value
 and max drawdown.
 
-Do not add --live and do not run anything with --yes. If I say "go live", place exactly the trade
-the dry run showed me, once: run `examples/forward-test-a-bot/forward-test.sh --decision
-"<ins_id> <side> <contracts>" --max-price <askCents> --live` with the values from that dry run.
+Do not add --place and do not run anything with --yes. If I say "place it", place exactly the
+trade the dry run showed me, once, as a paper trade: run
+`examples/forward-test-a-bot/forward-test.sh --decision "<ins_id> <side> <contracts>"
+--max-price <askCents> --place` with the values from that dry run. Never add the CLI's --live
+or --poly-intl: I am not asking for a live order.
 Do not rerun the bot or pick another game. Show me the receipt. If it exits 6 because the ask
 rose above my price, show me a new dry run and wait for me. If it exits 7, run `arena positions`
 and `arena orders` instead of running it again.
@@ -143,4 +145,4 @@ Show me the exact place_trade arguments first. Only call it, with confirm: true 
 UUID idempotency_key, after I say "go".
 ```
 
-The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer. `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets` and `get_my_stats` need 0.3.0 or newer. `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need 0.4.0 or newer; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.
+The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. A trade tool call is a paper trade unless it says `live: true` or `poly_intl: true` (arena-mcp-server 0.6.0 or newer), and none of these prompts asks for that. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer. `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets` and `get_my_stats` need 0.3.0 or newer. `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need 0.4.0 or newer; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.

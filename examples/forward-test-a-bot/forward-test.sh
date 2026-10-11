@@ -2,7 +2,7 @@
 # forward-test.sh: one forward-test step for a trading bot on Arena, at live prices.
 #
 # It runs the arena CLI in agent mode, in four steps:
-#   1. arena games --limit 20                                  (signed out is fine)
+#   1. arena games --league nfl --limit 20                     (signed out is fine)
 #   2. arena game <game_id>                                    (the next game that has not finished)
 #   3. arena buy <ins_id> --side yes --contracts 1 --dry-run   (the game's first instrument)
 #   4. arena stats                                             (your trading, graded)
@@ -15,12 +15,14 @@
 # instruments it has); the full JSON only goes to your bot. Set
 # FORWARD_TEST_VERBOSE=1 to print that JSON too.
 #
-# Step 3 is a DRY RUN: it prices the trade and places nothing. Only --live
-# places it, as a paper trade on your account.
+# Step 3 is a DRY RUN: it prices the trade and places nothing. Only --place
+# places it, as a paper trade on your account. It is never a live order: the
+# script does not pass the CLI's --live or --poly-intl, and it clears
+# ARENA_KALSHI_LIVE and ARENA_POLY_INTL_LIVE for its own commands.
 #
 # Usage:
-#   ./forward-test.sh [--bot <command>] [--league <id>] [--max-price <cents>] [--live]
-#   ./forward-test.sh --decision "<ins_id> <yes|no> <contracts>" [--max-price <cents>] [--live]
+#   ./forward-test.sh [--bot <command>] [--league <id>] [--max-price <cents>] [--place]
+#   ./forward-test.sh --decision "<ins_id> <yes|no> <contracts>" [--max-price <cents>] [--place]
 #
 # Options:
 #   --bot <command>      Let your bot choose the trade. The command reads the game's JSON
@@ -29,13 +31,14 @@
 #                        Without it, the script takes the first instrument, side yes, 1 contract.
 #   --decision "<ins_id> <yes|no> <contracts>"
 #                        Skip steps 1 and 2 and the bot, and price exactly this trade. With
-#                        --live, place exactly this trade. Use it to place what a dry run quoted.
+#                        --place, place exactly this trade. Use it to place what a dry run quoted.
 #   --max-price <cents>  Refuse the trade if the ask is above this price (1 to 99 cents),
-#                        checked when the trade is priced. With --live, pass the dry run's
+#                        checked when the trade is priced. With --place, pass the dry run's
 #                        askCents so the trade never costs more than the quote you approved.
-#   --league <id>        League for step 1 (default nfl, the league Arena game ids cover for now).
-#   --live               Place the paper trade instead of pricing it. Needs `arena login`
-#                        and an Arena Basic membership.
+#   --league <id>        League for step 1: nfl (the default), ncaaf, mlb, nhl, nba or epl.
+#   --place              Place the paper trade instead of pricing it. Needs `arena login`
+#                        and an Arena Basic membership. The older name --live still works
+#                        and means the same paper trade.
 #
 # Needs the arena CLI 0.3.0 or newer (npm install -g arena-prediction-cli) and Node.js 20
 # or newer, which the CLI already needs. Steps 3 and 4 need `arena login`.
@@ -50,6 +53,9 @@ set -euo pipefail
 ARENA="${ARENA_BIN:-arena}"
 # Agent mode: compact output, never a prompt, and a trade without the confirmation flag exits 2.
 export ARENA_AGENT=1
+# Paper only. From CLI 0.6.0 these two variables turn `arena buy` into a live order at a
+# venue, so this script clears them for its own commands.
+unset ARENA_KALSHI_LIVE ARENA_POLY_INTL_LIVE
 
 # Print the comment block above as help, then exit with the given code.
 usage() {
@@ -71,12 +77,15 @@ decision_arg=""
 has_decision=0
 league=""
 max_price=""
-live=0
+place=0
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     -h|--help) usage 0 ;;
-    --live) live=1; shift ;;
+    --place) place=1; shift ;;
+    --live)
+      say "--live is the old name for --place. It places a paper trade, never a live order."
+      place=1; shift ;;
     --bot)
       [ "$#" -ge 2 ] || fail "--bot needs a command"
       bot="$2"; shift 2 ;;
@@ -179,8 +188,9 @@ if [ "$has_decision" -eq 1 ]; then
 else
   # 1. Upcoming games (read-only, works signed out). The list starts 6 hours back, so
   #    it can open with finished games; 20 rows reach past a full NFL Sunday slate.
-  games_cmd=(games --limit 20)
-  [ -n "$league" ] && games_cmd+=(--league "$league")
+  #    From CLI 0.6.0 a bare `arena games` is today's games in every league, so the
+  #    league is always named.
+  games_cmd=(games --league "${league:-nfl}" --limit 20)
   say "step 1: arena ${games_cmd[*]}"
   games_json="$(run "${games_cmd[@]}" --json)"
   if [ "${FORWARD_TEST_VERBOSE:-0}" = "1" ]; then printf '%s\n' "$games_json"; fi
@@ -227,8 +237,8 @@ else
 
   cmd=(buy "$ins_id" --side "$side" --contracts "$contracts")
   [ -n "$max_price" ] && cmd+=(--max-price "$max_price")
-  if [ "$live" -eq 1 ]; then
-    # --live: the caller asked for a real paper trade, so pass the CLI's consent flag.
+  if [ "$place" -eq 1 ]; then
+    # --place: the caller asked to place the paper trade, so pass the CLI's consent flag.
     # This is the only place the script adds --yes. Each run is a new order, so
     # running the script twice places two trades.
     cmd+=(--yes)
@@ -236,7 +246,7 @@ else
     run "${cmd[@]}"
   else
     cmd+=(--dry-run)
-    say "step 3: dry run, nothing will be placed. Add --live to place it."
+    say "step 3: dry run, nothing will be placed. Add --place to place it as a paper trade."
     run "${cmd[@]}"
   fi
 fi

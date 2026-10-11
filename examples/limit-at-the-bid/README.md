@@ -2,6 +2,8 @@
 
 `limit-at-the-bid.sh` reads a market, takes the current bid for the side you choose, and prices a limit buy at that price. **It is a dry run by default:** it prints the order and places nothing. Add `--place` to place the paper order.
 
+The script never sends a live order. From CLI 0.6.0 a live order needs the CLI's `--live` or `--poly-intl` and goes to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The script passes neither flag, and it clears `ARENA_KALSHI_LIVE` and `ARENA_POLY_INTL_LIVE` for its own commands.
+
 ```bash
 ./limit-at-the-bid.sh <ticker> <yes|no> <contracts> [--tif gtc|ioc|fok] [--expires 30m|4h|2d|ISO-time] [--place]
 ```
@@ -40,9 +42,10 @@ After placing, `arena orders` shows the resting order and `arena cancel <order-i
     "holdDollars": 4.1,
     "dryRun": true,
     "placed": false
-  },
-  "help": ["arena positions", "arena sell <trade-id>"]
+  }
 }
 ```
 
-With `--place`, the JSON receipt is `{ status, order, ... }`. `status` says what happened: `executed` (filled now; `order.trade_id` is the new position), `resting` (waiting; `order.hold_dollars` is held until it fills, and `order.expires_at` is when it stops) or `canceled` (did not fill, nothing held; `order.cancel_reason` says why). `order.id` is what `arena cancel` takes.
+The example is shortened. From CLI 0.6.0 the quote also says what the order pays if it wins and the most it can lose (`payoutDollars`, `maxLossDollars`), and `help` holds the command that places the order, then `arena orders`.
+
+With `--place`, the JSON receipt is `{ receipt, order, trade? }` from CLI 0.5.0 (before 0.5.0 it was `{ status, order, ... }`). `receipt.status` says what happened: `executed` (filled now; `order.trade_id` is the new position), `resting` (waiting; `order.hold_dollars` is held until it fills, and `order.expires_at` is when it stops) or `canceled` (did not fill, nothing held; `order.cancel_reason` says why). `order.id` is what `arena cancel` takes.

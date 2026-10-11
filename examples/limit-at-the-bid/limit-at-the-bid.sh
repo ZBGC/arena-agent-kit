@@ -3,7 +3,9 @@
 #
 # This is a DRY RUN unless you pass --place. A dry run prints the order it would
 # place and places nothing. With --place it runs `arena buy ... --yes`, which
-# places a paper order on your account.
+# places a paper order on your account. It is never a live order: the script
+# does not pass the CLI's --live or --poly-intl, and it clears ARENA_KALSHI_LIVE
+# and ARENA_POLY_INTL_LIVE for its own commands.
 #
 # Usage:
 #   ./limit-at-the-bid.sh <ticker> <yes|no> <contracts> [--tif gtc|ioc|fok] [--expires 30m|4h|2d|ISO-time] [--place]
@@ -20,10 +22,13 @@
 set -euo pipefail
 
 ARENA="${ARENA_BIN:-arena}"
+# Paper only. From CLI 0.6.0 these two variables turn `arena buy` into a live order at a
+# venue, so this script clears them for its own commands.
+unset ARENA_KALSHI_LIVE ARENA_POLY_INTL_LIVE
 
 # Print the comment block above as help, then exit with the given code.
 usage() {
-  sed -n 's/^# \{0,1\}//; 2,18p' "$0" >&2
+  sed -n 's/^# \{0,1\}//; 2,20p' "$0" >&2
   exit "${1:-2}"
 }
 
