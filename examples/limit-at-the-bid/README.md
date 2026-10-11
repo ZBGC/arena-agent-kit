@@ -12,7 +12,7 @@ Find a ticker first with `arena markets --league NFL` or `arena search "<city>"`
 
 ## What it runs
 
-1. `arena market <ticker> --json` to read the market's status and the bid for your side. This is read-only.
+1. `arena market <ticker> --json` to read the market's status and the bid for your side. This is read-only. It needs `arena login`: signed out, the script stops with exit 4.
 2. `arena buy <ticker> --side <side> --contracts <n> --limit <bid> --dry-run --json`, which prices the order and places nothing.
 3. With `--place`, the same command with `--yes` instead of `--dry-run`. This places a paper order on your account and needs an Arena Basic membership.
 

@@ -10,9 +10,9 @@
                                                      # places exactly the trade a dry run quoted
 ```
 
-It needs the `arena` CLI 0.3.0 or newer (`npm install -g arena-prediction-cli`). Steps 1 and 2 work signed out. Pricing a trade and reading stats need `arena login`, and placing one needs Arena Basic ($9.99 a month or $49.99 a year; paper trading needs it past one free pick a day).
+It needs the `arena` CLI 0.5.0 or newer (`npm install -g arena-prediction-cli`). Steps 1 and 2 work signed out. Pricing a trade and reading stats need `arena login`, and placing one needs Arena Basic ($9.99 a month or $49.99 a year; paper trading needs it past one free pick a day).
 
-`--place` is the script's own flag, and it places a paper trade. It is not the CLI's `--live`, which from CLI 0.6.0 sends a live order to your own Kalshi account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The script never passes `--live` or `--poly-intl`, and it clears `ARENA_KALSHI_LIVE` and `ARENA_POLY_INTL_LIVE` for its own commands, so it never sends a live order. The script's older flag name, `--live`, still works and means the same paper trade.
+`--place` is the script's own flag, and it places a paper trade. It is not the CLI's `--live` on `arena buy`, which from CLI 0.6.0 sends a live order to your own Kalshi account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The script never passes `--live` or `--poly-intl`, and it clears `ARENA_KALSHI_LIVE` and `ARENA_POLY_INTL_LIVE` for its own commands, so it never sends a live order. The script's older flag name, `--live`, still works and means the same paper trade.
 
 ## Forward testing, not backtesting
 

@@ -2,7 +2,7 @@
 
 Prompts to paste into Claude Code, Cursor or any coding agent that can run the `arena` CLI or has the Arena MCP server. Replace anything in angle brackets.
 
-Every prompt here is for paper trading, in paper dollars. None asks for a live order, and none adds `--live` or `--poly-intl`. From CLI 0.6.0 those flags send a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The prompts still tell the agent to ask before it changes your account, because the positions and the record are yours.
+Every prompt here is for paper trading, in paper dollars. None asks for a live order, and none adds `--live` or `--poly-intl` to `arena buy`, `sell` or `cancel`. From CLI 0.6.0 those flags on those commands send a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The prompts still tell the agent to ask before it changes your account, because the positions and the record are yours.
 
 ## First session
 
@@ -34,10 +34,10 @@ yes_sub_title), the spread and the volume. Read-only.
 ## Look up a game (no sign-in needed)
 
 ```text
-Run `arena games` and pick the next game. Then run `arena game <game_id>` and list its
+Run `arena games --league nfl` and pick the next game. Then run `arena game <game_id>` and list its
 instruments: label, instrument_id, market type and line. For the moneylines, run
 `arena instrument <ins_id>` and tell me what YES means. Read-only. Needs arena-prediction-cli
-0.3.0 or newer.
+0.5.0 or newer.
 ```
 
 ## Compare venues (no sign-in needed)
@@ -46,7 +46,7 @@ instruments: label, instrument_id, market type and line. For the moneylines, run
 Run `arena quotes "<bet in words>"` and show me each venue's price for YES, with its time and
 its note. Then run `arena gaps "<bet in words>"` and show me each pair's cost after fees and
 why it is or is not labelled arbitrage, word for word. Read-only. Needs arena-prediction-cli
-0.4.0 or newer.
+0.5.0 or newer.
 ```
 
 ## Forward-test my bot
@@ -98,7 +98,7 @@ Only rerun it with --place if I say so.
 
 ```text
 Run
-`arena positions --live --fields id,market_ticker,market_title,side,contracts,entry_price_cents,markPriceCents,unrealizedPnlDollars`
+`arena positions --fields id,market_ticker,market_title,side,contracts,entry_price_cents,markPriceCents,unrealizedPnlDollars`
 and `arena orders --fields orderId,ticker,side,limitPriceCents,remaining,expiresAt,holdDollars`.
 For each open position show the market, side, contracts, entry price, current mark and
 unrealized P&L. For each resting order show the limit price, contracts left and expiry. Suggest at most two changes, each as an exact
@@ -140,9 +140,9 @@ venue fee (paper fills do not pay it). Then call get_my_stats. Do not call place
 
 ```text
 Using the arena MCP tools, prepare a limit buy of <N> NO contracts on <ticker> at <price> cents.
-If place_trade has no limit_price_cents argument, stop and tell me: the server is older than 0.2.0.
+If place_trade has no limit_price_cents argument, stop and tell me: the server is older than 0.5.0.
 Show me the exact place_trade arguments first. Only call it, with confirm: true and a fresh
 UUID idempotency_key, after I say "go".
 ```
 
-The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server is read-only. A trade tool call is a paper trade unless it says `live: true` or `poly_intl: true` (arena-mcp-server 0.6.0 or newer), and none of these prompts asks for that. Limit prices, `get_orders` and `cancel_order` need arena-mcp-server 0.2.0 or newer. `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets` and `get_my_stats` need 0.3.0 or newer. `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need 0.4.0 or newer; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.
+The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server places no trades. A trade tool call is a paper trade unless it says `live: true` or `poly_intl: true`, or the server's environment sets `ARENA_KALSHI_LIVE` or `ARENA_POLY_INTL_LIVE` to 1, true or on (arena-mcp-server 0.6.0 or newer), and none of these prompts asks for that. Limit prices, `get_orders`, `cancel_order`, `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets`, `get_my_stats`, `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need arena-mcp-server 0.5.0 or newer, the first release on npm that has them; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.

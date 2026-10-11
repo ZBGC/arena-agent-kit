@@ -3,14 +3,14 @@
 #
 # It runs three read commands and never places, sells or cancels anything:
 #   arena balance --json
-#   arena positions --live --json
+#   arena positions --json            (marked to live prices, the default from CLI 0.5.0)
 #   arena orders --status resting --json
 #
 # Usage:
 #   ./daily-review.sh                 # print the JSON
 #   ./daily-review.sh > review.json   # save it
 #
-# Needs the arena CLI (npm install -g arena-prediction-cli), signed in with `arena login`.
+# Needs the arena CLI 0.5.0 or newer (npm install -g arena-prediction-cli), signed in with `arena login`.
 # Set ARENA_BIN to use a different arena executable.
 # Exits with the CLI's own exit code when a command fails (4 means: run `arena login`).
 
@@ -39,7 +39,7 @@ read_json() {
 }
 
 balance="$(read_json balance)"
-positions="$(read_json positions --live)"
+positions="$(read_json positions)"
 orders="$(read_json orders --status resting)"
 
 # Node.js is already installed, because the arena CLI runs on it.

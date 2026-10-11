@@ -40,7 +40,7 @@
 #                        and an Arena Basic membership. The older name --live still works
 #                        and means the same paper trade.
 #
-# Needs the arena CLI 0.3.0 or newer (npm install -g arena-prediction-cli) and Node.js 20
+# Needs the arena CLI 0.5.0 or newer (npm install -g arena-prediction-cli) and Node.js 20
 # or newer, which the CLI already needs. Steps 3 and 4 need `arena login`.
 # Set ARENA_BIN to use a different arena executable.
 # Exit codes: 0 done, or no game to test on. 1 the bot failed, or its input could not be read.
@@ -124,7 +124,7 @@ explain_and_exit() {
   shift
   say "'arena $*' exited $code"
   case "$code" in
-    2) say "usage error. 'unknown command' means the CLI is older than 0.3.0: npm install -g arena-prediction-cli@latest" ;;
+    2) say "usage error. 'unknown command' means the CLI is older than 0.5.0: npm install -g arena-prediction-cli@latest" ;;
     4) say "not signed in. Run: arena login" ;;
     5) say "this needs an Arena Basic membership: https://arena-predictions.com/pro" ;;
     6) say "refused: for example an unknown instrument, a closed market, no live ask, or an ask above --max-price. Do not resend the same trade." ;;

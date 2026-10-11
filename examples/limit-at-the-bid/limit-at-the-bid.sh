@@ -92,21 +92,28 @@ if [ "$code" -ne 0 ]; then
 fi
 
 # 2. Pull out the market status and this side's bid. Node.js is already
-#    installed, because the arena CLI runs on it.
+#    installed, because the arena CLI runs on it. From CLI 0.6.0 a signed-out
+#    `arena market` answers an instrument Arena lists with exit 0 and
+#    `signedIn: false`, without a status, so that case is read here.
 fields="$(printf '%s' "$market_json" | node -e '
 let text = "";
 process.stdin.on("data", (chunk) => { text += chunk; });
 process.stdin.on("end", () => {
-  const market = JSON.parse(text).market ?? {};
+  const doc = JSON.parse(text);
+  const market = doc.market ?? {};
   const bid = market[process.argv[1] + "_bid"];
-  const title = String(market.title ?? "").replace(/\s+/g, " ");
-  console.log([market.status ?? "unknown", Number.isInteger(bid) ? bid : "none", title].join("\t"));
+  const title = String(market.title ?? market.instrument_label ?? "").replace(/\s+/g, " ");
+  const status = doc.signedIn === false ? "signed-out" : market.status ?? "unknown";
+  console.log([status, Number.isInteger(bid) ? bid : "none", title].join("\t"));
 });
 ' "$side")"
 IFS=$'\t' read -r status bid title <<< "$fields"
 
 case "$status" in
   active|open) ;;
+  signed-out)
+    echo "limit-at-the-bid: not signed in. Run: arena login" >&2
+    fail "a limit order needs your own sign-in, and 'arena market $ticker' answered signed out" 4 ;;
   *) fail "$ticker is not open for trading (status: $status)" 6 ;;
 esac
 if [ "$bid" = "none" ] || [ "$bid" -lt 1 ] || [ "$bid" -gt 99 ]; then
