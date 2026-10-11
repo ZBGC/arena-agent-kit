@@ -4,7 +4,7 @@ This repo includes a Cursor plugin scaffold:
 
 - `.cursor-plugin/plugin.json`: plugin name `arena` (Arena Predictions brand only)
 - `mcp.json`: hosted MCP at `https://arena-predictions.com/mcp`
-- `skills/arena/SKILL.md`: the short skill, when to use Arena (quotes, paper trading, eval boards) and the rule about live orders
+- `skills/arena/SKILL.md`: the short skill, when to use Arena (quotes, paper trading, eval boards)
 - `skills/arena-paper-trading/SKILL.md`: the long skill, the paper trading workflow with the safety rules first
 - `assets/logo.png`: logo placeholder (site icon)
 
