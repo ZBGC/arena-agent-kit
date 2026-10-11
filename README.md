@@ -1,11 +1,11 @@
 # Arena Predictions agent kit
 
-Arena Predictions (arena-predictions.com) lets a bot or AI agent paper trade real prediction markets at live prices from a CLI or an MCP server. No real money moves. A trade held to the end settles against the real outcome. Accounts are private by default: nobody else sees a trader's trades or record until the person makes the profile public in Settings on the website.
+Arena Predictions (arena-predictions.com) is where a bot or AI agent paper trades real prediction markets at live prices in a sandbox, from a CLI or an MCP server, and where a member sends live orders to Kalshi or, outside the US, Polymarket International with their own venue credentials. A paper trade held to the end settles against the real outcome. Accounts are private by default: nobody else sees a trader's trades or record until the person makes the profile public in Settings on the website. Backtesting is in early access. A live order is real money at the venue, under the venue's rules and terms; Arena is not a broker and never holds your funds.
 
 This kit is for people who build trading bots and AI agents and want to forward-test them at live prices, with a record that stays private unless they make it public, before they risk real money. It holds the instructions an agent follows, agent skills, a Claude Code plugin, a Cursor plugin scaffold, a Gemini CLI extension and small examples for the `arena` command line and the Arena MCP server.
 
 - **Price:** Arena Basic costs $9.99 a month or $49.99 a year, and paper trading needs it past one free pick a day. The signed-out lookups below do not.
-- **Limits:** paper money only; only the markets Arena lists; no orders are sent to any exchange; there is no contract limit, so your balance is the only limit on size (one trade records at most 1,000,000,000 contracts); a fill is at one displayed price for the whole size, with no fee charged; API keys are read-only; and the text-to-ticker resolver covers full-game lines in the NFL, college football, MLB, the NHL, the NBA and the Premier League only. Arena forward-tests at live prices. It does not backtest today.
+- **Limits:** paper orders are the default, filled in Arena's sandbox; only the markets Arena lists; a live order goes only to Kalshi or Polymarket International (not for US persons), with your own venue credentials, as real money at the venue under the venue's rules and terms (Arena is not a broker and never holds your funds), and ProphetX orders are switched off; there is no contract limit, so your balance is the only limit on size (one trade records at most 1,000,000,000 contracts); a paper fill is at one displayed price for the whole size, with no fee charged; API keys only read unless made with trade:write (paper orders), trade:write:kalshi or trade:write:poly-intl (live orders); and the text-to-ticker resolver covers full-game lines in the NFL, college football, MLB, the NHL, the NBA and the Premier League only. Arena forward-tests at live prices. Backtesting is in early access.
 - **Not to be confused with:** Meta's reported Arena app, Prediction Arena (predictionarena.ai), the Prediction Arena benchmark paper (arXiv 2604.07355), LMArena or Are.na. Arena Predictions is not affiliated with any of them.
 
 ## Install
@@ -72,7 +72,7 @@ gemini extensions install https://github.com/ZBGC/arena-agent-kit
 
 **Cursor.** The plugin scaffold in this repo is described in [CURSOR-PLUGIN.md](CURSOR-PLUGIN.md). It is not submitted to a marketplace.
 
-The plugin, the skill and the extension install from this GitHub repository, so they need it to be public. The plugin, the extension and the local MCP server reuse the login from `arena login`, so install the CLI and sign in first. On the published local server (npm 0.5.0), the eight signed-out tools answer without that login. The hosted server's tool list is separate and shows what is on.
+The plugin, the skill and the extension install from this GitHub repository, so they need it to be public. The plugin, the extension and the local MCP server reuse the login from `arena login`, so install the CLI and sign in first. On the published local server (npm 0.6.0), the twelve tools that need no sign-in answer without that login. The hosted server's tool list is separate and shows what is on.
 
 ## Try signed out
 
@@ -90,7 +90,7 @@ arena leaderboard --top 10     # the 30-day board; --window all for profit acros
 
 The resolver covers full-game moneylines, spreads and totals in the NFL, college football, MLB, the NHL, the NBA and the Premier League: "kc -3.5", "canes over 5.5", "arsenal leeds draw".
 
-On the MCP server, the signed-out tools are `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games`, `get_cross_venue_quotes` and `find_price_gaps`. Everything else needs `arena login`.
+On the MCP server, 0.6.0 has twelve tools that need no sign-in: `get_leaderboard`, `get_trader`, `get_eval_board`, `get_track_record`, `resolve_market`, `get_instrument`, `get_game`, `list_games`, `get_cross_venue_quotes`, `find_price_gaps`, `get_market` for an Arena instrument and, with an API key, `get_my_eval`. Everything else needs `arena login`.
 
 ## Prices across venues
 
@@ -98,7 +98,7 @@ Arena shows the same bet's price on Kalshi and, where it has matched the bet, on
 
 From 0.4.0, `arena buy` and `arena sell` take `--venue best|kalshi`, and `place_trade` and `sell_trade` take `route` and `dry_run`. With best, the default, a paper fill can take Novig's or Polymarket's price for the same bet when it passes Arena's checks: at most 15 seconds old, within 5 points of Kalshi's midpoint, below Kalshi's ask and above Kalshi's bid, with the size shown, before the game starts. Routing is for Arena Basic members. Every receipt names the venue, and every fill settles as the Kalshi market settles. `--venue kalshi` or `route: "kalshi"` fills at Kalshi's price, which is what a bot that models Kalshi's book alone should pass. The iPhone app fills at Kalshi's price.
 
-Arena is paper trading. It sends no order to Kalshi, Novig or Polymarket. The rules, the fees and a worked example: https://arena-predictions.com/docs/methodology.
+Paper trades are not sent to Kalshi, Novig or Polymarket. The rules, the fees and a worked example: https://arena-predictions.com/docs/methodology.
 
 ## Balance and resets
 
@@ -120,6 +120,7 @@ Coding agents can call `arena` directly. When its output is piped or captured, o
 - It never prompts. `buy`, `sell` and `cancel` need `--yes`, or they exit 2 and send nothing. `arena settle` does not, because it only settles trades whose markets have already resolved.
 - `--dry-run` shows a buy or sell without placing it. A buy's dry run shows where it would fill, the price, the stake and an estimated venue fee, which is never charged on paper. From 0.4.0 a market sell's dry run under `--venue best` shows where the exit would be priced. Under `--venue kalshi`, or on an older CLI, it shows the ticker, side and contracts but not the price: read the side's bid (`yes_bid` or `no_bid`) with `arena market <ticker>`.
 - Exit codes are typed: 2 usage, 4 not signed in, 5 needs Arena Basic, 6 refused, 7 network. A trade that exits 7 may still have gone through, so check `arena positions` before anything else.
+- Every order is a paper order unless the command says `--live` or `--poly-intl` (0.6.0 or newer), or `ARENA_KALSHI_LIVE` or `ARENA_POLY_INTL_LIVE` is set. That is a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. Polymarket International is not for US persons. [AGENTS.md](AGENTS.md) tells an agent never to add one unless you asked for a live order in those words.
 
 Give your agent [AGENTS.md](AGENTS.md), or paste https://arena-predictions.com/agent.txt into the chat.
 
@@ -140,18 +141,22 @@ Give your agent [AGENTS.md](AGENTS.md), or paste https://arena-predictions.com/a
 
 The hosted server at `https://arena-predictions.com/mcp` (above) needs no install and no CLI login for its signed-out tools. The local server below reuses `arena login` and has every tool.
 
-arena-mcp-server 0.5.0, the version on npm, registers 21 tools by default, 8 of them signed out, and 25 with trading on (`get_privacy` and `set_privacy` among them: `set_privacy` only makes an account private). This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools, 0.3.1 or newer for `get_cross_venue_quotes`, 0.4.0 or newer for `find_price_gaps` and for `route` and `dry_run` on the trade tools, and 0.5.0 or newer for the run and lifetime P&L on `get_balance`, `window` and `kind` on `get_leaderboard`, and `reset_account`. 0.5.0 is on npm (0.4.0 was not published separately). CLI and MCP 0.6.0 (API keys, `list_api_keys`, `revoke_api_key`, and the rate-limit exit codes in [llms.txt](llms.txt)) are documented and not on npm yet. This repository does not publish them.
+arena-mcp-server 0.6.0, the version on npm, registers 32 tools by default, 12 of them with no sign-in, and 36 with trading on (`get_privacy` and `set_privacy` among them: `set_privacy` only makes an account private). This kit needs 0.3.0 or newer for the instrument, game, chart, screener and stats tools, 0.3.1 or newer for `get_cross_venue_quotes`, 0.4.0 or newer for `find_price_gaps` and for `route` and `dry_run` on the trade tools, 0.5.0 or newer for the run and lifetime P&L on `get_balance`, `window` and `kind` on `get_leaderboard`, and `reset_account`, and 0.6.0 or newer for API keys (`list_api_keys`, `revoke_api_key`, key mode), the eval board and signed records (`get_eval_board`, `get_track_record`, `get_my_eval`), the perps, backtest and saved-run tools, `live` and `poly_intl` on the trade tools, and the rate-limit exit codes in [llms.txt](llms.txt). 0.5.0 and 0.6.0 are on npm (0.4.0 was not published separately). This repository does not publish them.
 
 | Group | Tools |
 |---|---|
-| Public records and lookups (signed out) | `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games` |
-| Prices on other venues (signed out) | `get_cross_venue_quotes`: one instrument's price on Kalshi and, while Arena shows them, on Novig and Polymarket. `find_price_gaps`: the gaps between them after each venue's fees. Arena does not route orders to Kalshi, Novig or Polymarket. |
-| Your account (needs `arena login`) | `get_positions`, `get_balance`, `get_history`, `get_my_stats`, `get_orders` (0.5.0; read-only, so trading need not be on) |
-| Markets (needs `arena login`) | `list_markets`, `search_markets`, `get_market`, `get_orderbook`, `get_price_history`, `screen_markets` |
+| Public records and lookups (no sign-in) | `get_leaderboard`, `get_trader`, `resolve_market`, `get_instrument`, `get_game`, `list_games` and, from 0.6.0, `get_eval_board` and `get_track_record` |
+| Prices (no sign-in) | `get_cross_venue_quotes`: one instrument's price on Kalshi and, while Arena shows them, on Novig and Polymarket. `find_price_gaps`: the gaps between them after each venue's fees. From 0.6.0, `get_market` prices an Arena instrument with no sign-in. Paper trades are not sent to Kalshi, Novig or Polymarket. |
+| Your own picks, scored (an API key, or `arena login`; 0.6.0) | `get_my_eval` |
+| Your account (needs `arena login`) | `get_positions`, `get_balance`, `get_history`, `get_my_stats`, `get_privacy`, `set_privacy`, `get_orders` (0.5.0; read-only, so trading need not be on) and, from 0.6.0, `list_api_keys` |
+| Markets (needs `arena login`) | `list_markets`, `search_markets`, `get_market` for a Kalshi ticker, `get_orderbook`, `get_price_history`, `screen_markets` |
+| Kalshi perps (needs `arena login`, 0.6.0) | `list_perps`, `get_perp_mark`, `get_perp_history` |
+| Saved backtests and evals (needs `arena login`, 0.6.0) | `run_backtest`, `run_eval`, `list_runs`, `get_run` |
 | Trading (only with `ARENA_MCP_ALLOW_TRADE=1`) | `place_trade`, `sell_trade`, `cancel_order`, `settle_open` (and `get_orders` before 0.5.0) |
 | Reset (only with `ARENA_ALLOW_RESET=1`, 0.5.0) | `reset_account`: the agent shows you `get_balance` and asks first, then calls it with `confirm: "RESET"` and the run it read. |
+| Key revoke (only with `ARENA_MCP_ALLOW_KEYS=1`, 0.6.0) | `revoke_api_key`: only when you ask, with `confirm: true`. No tool makes or rotates a key. |
 
-The server is read-only by default. To let an agent place paper trades, set `ARENA_MCP_ALLOW_TRADE=1` in the server's environment (`claude mcp add arena -e ARENA_MCP_ALLOW_TRADE=1 -- npx -y arena-mcp-server@latest`, or an `"env"` block in the JSON). The plugin and the Gemini extension run the server read-only. For trading, add the server by hand as above instead of through them. Each call that changes the account (`place_trade`, `sell_trade`, `cancel_order`, `settle_open`) also needs `confirm: true`. `place_trade` takes a `ticker` with a `side`, or an `instrument_id` with an `instrument_side`. From 0.4.0 `place_trade` and `sell_trade` also take `route` (`best`, the default, or `kalshi`) and `dry_run: true`, which answers where the trade would fill and places nothing. Call it first and show the person `fill_venue`, `price_cents`, `kalshi_price_cents` and `rule_note` before `confirm: true`. To hold what they saw, pass `max_price_cents` equal to the preview's `price_cents`, and `route: "kalshi"` when the preview named Kalshi. From 0.5.0 a retry with the same `idempotency_key` answers the trade already placed with `replayed: true`; the same key on a different order is refused with `idempotency_key_reused`.
+The server is read-only by default. To let an agent place paper trades, set `ARENA_MCP_ALLOW_TRADE=1` in the server's environment (`claude mcp add arena -e ARENA_MCP_ALLOW_TRADE=1 -- npx -y arena-mcp-server@latest`, or an `"env"` block in the JSON). The plugin and the Gemini extension run the server read-only. For trading, add the server by hand as above instead of through them. Each call that changes the account (`place_trade`, `sell_trade`, `cancel_order`, `settle_open`) also needs `confirm: true`. A trade is a paper trade unless the call says `live: true` or `poly_intl: true` (0.6.0 or newer). That is a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. Polymarket International is not for US persons. `place_trade` takes a `ticker` with a `side`, or an `instrument_id` with an `instrument_side`. From 0.4.0 `place_trade` and `sell_trade` also take `route` (`best`, the default, or `kalshi`) and `dry_run: true`, which answers where the trade would fill and places nothing. Call it first and show the person `fill_venue`, `price_cents`, `kalshi_price_cents` and `rule_note` before `confirm: true`. To hold what they saw, pass `max_price_cents` equal to the preview's `price_cents`, and `route: "kalshi"` when the preview named Kalshi. From 0.5.0 a retry with the same `idempotency_key` answers the trade already placed with `replayed: true`; the same key on a different order is refused with `idempotency_key_reused`.
 
 `get_market` with `contracts` adds an estimated venue fee that paper fills do not pay. If an agent reports `get_instrument` or `get_my_stats` as an unknown tool, the server is older than 0.3.0. Update any copy you installed with npm, or change `arena-mcp-server` to `arena-mcp-server@latest` in the command, then restart your client.
 
@@ -175,7 +180,7 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 
 ## Forward-test a bot
 
-[examples/forward-test-a-bot/](examples/forward-test-a-bot/) runs your bot's decision against the next scheduled game at live prices: it lists games, reads the instruments on the next one that has not finished, prices the trade your bot picks and shows your grades. It is a dry run unless you pass `--live`. Arena forward-tests: the bot decides on markets that have not settled yet, and a trade held to the end is graded against the real outcome. It does not replay past markets.
+[examples/forward-test-a-bot/](examples/forward-test-a-bot/) runs your bot's decision against the next scheduled game at live prices: it lists games, reads the instruments on the next one that has not finished, prices the trade your bot picks and shows your grades. It is a dry run unless you pass `--place`, and then it places a paper trade. Arena forward-tests: the bot decides on markets that have not settled yet, and a trade held to the end is graded against the real outcome. This example does not replay past markets; backtesting is in early access.
 
 ## What is in this repo
 
@@ -186,53 +191,43 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 | [.claude-plugin/](.claude-plugin/) | The Claude Code plugin (`plugin.json`) and its marketplace (`marketplace.json`). |
 | [gemini-extension.json](gemini-extension.json) | The Gemini CLI extension. |
 | [CURSOR-PLUGIN.md](CURSOR-PLUGIN.md) | The Cursor plugin scaffold (name `arena`, hosted MCP). Marketplace submission is not done. |
-| [examples/forward-test-a-bot/](examples/forward-test-a-bot/) | A script that forward-tests a bot's pick at live prices. It is a dry run unless you pass `--live`. |
+| [examples/forward-test-a-bot/](examples/forward-test-a-bot/) | A script that forward-tests a bot's pick at live prices. It is a dry run unless you pass `--place`. |
 | [examples/daily-review/](examples/daily-review/) | A read-only script that prints your balance, positions and resting orders as one JSON document, plus a prompt that turns it into a review. |
 | [examples/limit-at-the-bid/](examples/limit-at-the-bid/) | A script that prices a limit buy at the current bid. It is a dry run unless you pass `--place`. |
 | [examples/agent-prompts.md](examples/agent-prompts.md) | Prompts to paste into Claude Code, Cursor or any agent that has the CLI or the MCP server. |
 | [.mcp.json](.mcp.json) | A read-only MCP server config you can copy. The plugin uses it too. |
-| [server.json](server.json) | The server's entry for the official MCP registry, including the hosted remote at `https://arena-predictions.com/mcp`. |
-| [llms.txt](llms.txt) | A copy of https://arena-predictions.com/llms.txt. The live file is the one to trust. |
+| [server.json](server.json) | A copy of the server's 0.6.0 entry in the official MCP registry, including the hosted remote at `https://arena-predictions.com/mcp`. |
+| [llms.txt](llms.txt) | The long reference for language models, kept in this repository. The short index is https://arena-predictions.com/llms.txt. |
 
 ### Releasing a change
 
-Claude Code sends an update to people who installed the plugin only when `version` in `.claude-plugin/plugin.json` changes. New commits with the same version do not reach them. So a change to `skills/`, `.mcp.json`, `AGENTS.md` or `llms.txt` ships with a version bump, for example 0.5.0 to 0.5.1, made in both `.claude-plugin/plugin.json` and `gemini-extension.json` so the two stay the same. Keep `version` out of `marketplace.json`: when both files set one, Claude Code uses `plugin.json` and the validator reports the mismatch.
+Claude Code sends an update to people who installed the plugin only when `version` in `.claude-plugin/plugin.json` changes. New commits with the same version do not reach them. So a change to `skills/`, `.mcp.json`, `mcp.json`, `AGENTS.md` or `llms.txt` ships with a version bump, for example 0.6.1 to 0.6.2, made in `.claude-plugin/plugin.json`, `gemini-extension.json` and `.cursor-plugin/plugin.json` so the three stay the same. Keep `version` out of `marketplace.json`: when both files set one, Claude Code uses `plugin.json` and the validator reports the mismatch.
 
-This kit's plugin and Gemini extension are at 0.5.1. That number is the kit. It is not an npm release.
+This kit's Claude Code plugin, Gemini extension and Cursor plugin are all at 0.6.1. That number is the kit. It is not an npm release: the packages on npm are at 0.6.0, and arena-core at 0.5.0. Before this change the Claude Code plugin and the Gemini extension were at 0.5.1 and the Cursor plugin at 0.6.0, so 0.6.1 is the first number above all three.
 
 ### npm 0.6.0
 
-Gustavo publishes npm. This repository has no `package.json` for `arena-prediction-cli`, `arena-mcp-server`, `arena-core` or `arena-mcp-tools`, and it does not contain that source, so nothing here is set to 0.6.0. npm still serves 0.5.0 of each of those packages. The hosted MCP server reports its own build version; that string is not an npm publish.
+Gustavo publishes npm. This repository has no `package.json` for `arena-prediction-cli`, `arena-mcp-server`, `arena-core` or `arena-mcp-tools`, and it does not contain that source. `arena-prediction-cli`, `arena-mcp-server` and `arena-mcp-tools` 0.6.0 and `arena-core` 0.5.0 were published to npm on 2026-10-10, and they are what `npm install` and `npx` serve now. The hosted MCP server reports its own build version; that string is not an npm publish.
 
-On the packages that are on npm today, `homepage` is `https://arena-predictions.com/docs`. That path redirects to the HTTP API site at `https://docs.arena-predictions.com`, and a fragment on it (the published CLI README uses `https://arena-predictions.com/docs#cli-install`) never opens the CLI page. `repository` is unset. On the 0.6.0 publish, set `package.json` like this and leave the version bump in those packages to that publish:
+In those releases each `package.json` points at this repository and at the docs page for the package, and each package is MIT:
 
 | Package | `homepage` | Also set |
 |---|---|---|
-| `arena-prediction-cli` | `https://arena-predictions.com/docs/cli` | `repository.url` `git+https://github.com/ZBGC/arena-agent-kit.git`, `repository.type` `git`, `bugs.url` `https://github.com/ZBGC/arena-agent-kit/issues`. In the package README, link docs at `https://arena-predictions.com/docs/cli#cli-install`. |
-| `arena-mcp-server` | `https://arena-predictions.com/docs/mcp` | The same `repository` and `bugs`. In the package README, link docs at `https://arena-predictions.com/docs/mcp`. |
-| `arena-core`, `arena-mcp-tools` | `https://arena-predictions.com/docs/cli` | The same `repository` and `bugs`. Their homepage is the redirecting `/docs` URL today. |
-| `arena-predictions` (PyPI) | `https://arena-predictions.com/docs/python` | Set the Documentation project URL to that page. It is `https://arena-predictions.com/docs` today. |
+| `arena-prediction-cli` | `https://arena-predictions.com/docs/cli` | `repository.url` `git+https://github.com/ZBGC/arena-agent-kit.git`, `repository.type` `git`, `bugs.url` `https://github.com/ZBGC/arena-agent-kit/issues`. |
+| `arena-mcp-server`, `arena-mcp-tools` | `https://arena-predictions.com/docs/mcp` | The same `repository` and `bugs`. |
+| `arena-core` | `https://arena-predictions.com/agents` | The same `repository` and `bugs`. |
 
-`https://arena-predictions.com/agents` is the right homepage when a package is about the agent workflow rather than one docs page.
+One thing is still open. `arena-predictions` on PyPI is at 0.2.0 (0.3.0 is not on PyPI yet), and its Documentation project URL is `https://arena-predictions.com/docs`, which redirects to the HTTP API site. The page for it is `https://arena-predictions.com/docs/python`.
 
 ### Official MCP registry
 
-`server.json` is what gets published as `com.arena-predictions/arena`. Registry versions are immutable, and `0.5.0` is already the live entry, so this file is `0.5.1`: the npm pin stays `arena-mcp-server` `0.5.0` (that version exists; `0.6.0` does not), and `remotes` adds the hosted Streamable HTTP server at `https://arena-predictions.com/mcp`. `websiteUrl` stays `https://arena-predictions.com/docs/mcp`.
+The official MCP registry lists the server as `com.arena-predictions/arena`. Its latest entry is 0.6.0, published from the packages repository's `server.json`: the npm pin is `arena-mcp-server` 0.6.0, and `remotes` names the hosted Streamable HTTP server at `https://arena-predictions.com/mcp`. [server.json](server.json) in this repository is a copy of that file, byte for byte, and nothing is published from here. Registry versions are immutable, so a change to the entry ships as a new version from the packages repository, and this copy follows it.
 
-After this pull request is merged, from a checkout of it, publish with the DNS login this namespace already uses. Command reference: https://github.com/modelcontextprotocol/registry/blob/main/docs/reference/cli/commands.md
-
-```bash
-mcp-publisher login dns --domain arena-predictions.com --private-key <hex-private-key>
-mcp-publisher publish
-```
-
-Skip the login line when `mcp-publisher` already has a token for `com.arena-predictions`. GitHub login only covers an `io.github.*` name. Confirm the new latest entry shows `remotes[0].url` of `https://arena-predictions.com/mcp`:
+To read the latest entry:
 
 ```bash
 curl -sS "https://registry.modelcontextprotocol.io/v0.1/servers/com.arena-predictions%2Farena/versions/latest"
 ```
-
-When npm `arena-mcp-server@0.6.0` exists, set both `version` and `packages[0].version` in `server.json` to `0.6.0` and run `mcp-publisher publish` again. Publishing `0.5.1` again will be refused as a duplicate version.
 
 ## Docs
 
@@ -261,4 +256,4 @@ These pages stay on `arena-predictions.com` and keep a `#fragment`. The path `ht
 | [arena-prediction-cli](https://www.npmjs.com/package/arena-prediction-cli) | The `arena` command. |
 | [arena-mcp-server](https://www.npmjs.com/package/arena-mcp-server) | The local stdio MCP server. |
 
-This repository holds documentation, examples and install manifests. It is released under the [MIT License](LICENSE). The arena-prediction-cli and arena-mcp-server packages on npm carry their own terms. Arena itself is a paid service: paper trading with virtual dollars that are never redeemable, and nothing here can move real money.
+This repository holds documentation, examples and install manifests. It is released under the [MIT License](LICENSE). The npm packages are MIT too, from arena-prediction-cli, arena-mcp-server and arena-mcp-tools 0.6.0 and arena-core 0.5.0. Arena itself is a paid service. Sandbox balances are paper dollars and are never redeemable. A live order is sent only when you ask for one, with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds.

@@ -10,3 +10,5 @@ This repo includes a Cursor plugin scaffold:
 Cursor reads root `mcp.json`. Other tools may use `.mcp.json` (the local npx server in this repo); that file is unchanged.
 
 Marketplace submission is a separate step and is not done from this commit.
+
+The plugin's `version` is the kit's number, the same in `.claude-plugin/plugin.json` and `gemini-extension.json`. A change to anything the plugin ships bumps all three together: see Releasing a change in the [README](README.md).
