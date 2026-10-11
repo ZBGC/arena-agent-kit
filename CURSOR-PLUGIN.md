@@ -8,7 +8,7 @@ This repo includes a Cursor plugin scaffold:
 - `skills/arena-paper-trading/SKILL.md`: the long skill, the paper trading workflow with the safety rules first
 - `assets/logo.png`: logo placeholder (site icon)
 
-Cursor reads root `mcp.json`. Other tools may use `.mcp.json`, the local npx server in this repo.
+`mcp.json` holds the hosted server and `.mcp.json` the local npx server.
 
 The plugin is not submitted to a marketplace.
 
