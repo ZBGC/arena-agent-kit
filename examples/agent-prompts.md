@@ -58,8 +58,8 @@ My bot is `<command that runs my bot>`. It reads a game's JSON on stdin and prin
 
 Run `examples/forward-test-a-bot/forward-test.sh --bot "<command that runs my bot>"` (a dry
 run) and show me, for the trade it picked: the game, the instrument label and what YES means,
-the side, contracts, price, stake and the estimated venue fee (not charged on paper). Then
-summarize `arena stats`: graded trades, win rate against the prices paid, closing-line value
+the side, contracts, where it would fill, the price, the stake, what it pays if it wins and the
+most it can lose. Then summarize `arena stats`: graded trades, win rate against the prices paid, closing-line value
 and max drawdown.
 
 Do not add --place and do not run anything with --yes. If I say "place it", place exactly the
