@@ -3,7 +3,7 @@
   "name": "com.arena-predictions/arena",
   "title": "Arena Predictions",
   "description": "Paper trade prediction markets at live prices from your AI agent, and score every trade.",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "websiteUrl": "https://arena-predictions.com/docs/mcp",
   "icons": [
     {
@@ -12,18 +12,12 @@
       "sizes": ["512x512"]
     }
   ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://arena-predictions.com/mcp"
-    }
-  ],
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "arena-mcp-server",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
@@ -31,7 +25,7 @@
       "environmentVariables": [
         {
           "name": "ARENA_MCP_ALLOW_TRADE",
-          "description": "Set to 1 to register the paper-trade tools (place_trade, sell_trade, get_orders, cancel_order, settle_open). Any other value leaves trading off.",
+          "description": "Set to 1 to register the paper-trade tools (place_trade, sell_trade, cancel_order, settle_open). Any other value leaves trading off.",
           "isRequired": false,
           "format": "string",
           "choices": ["0", "1"],
@@ -46,12 +40,39 @@
           "default": "0"
         },
         {
+          "name": "ARENA_MCP_ALLOW_KEYS",
+          "description": "Set to 1 to register revoke_api_key, which revokes one of the account's API keys when the person asks (confirm: true). Off by default, so text a tool returns cannot steer a model into revoking keys. list_api_keys is always registered. Any other value leaves it out.",
+          "isRequired": false,
+          "format": "string",
+          "choices": ["0", "1"],
+          "default": "0"
+        },
+        {
           "name": "ARENA_CREDENTIALS_FILE",
           "description": "Optional path to a credentials file for headless or CI use. By default the server reads the credentials that `arena login` stored.",
           "isRequired": false,
           "format": "filepath"
+        },
+        {
+          "name": "ARENA_API_KEY",
+          "description": "Optional Arena API key (arena_sk_...) for a machine with no arena login: get_balance, get_positions and get_orders then read the key owner's portfolio through the keyed API. A session always wins there. get_my_eval reads with it when it is set, else with the sign-in. Trade tools still need arena login.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "ARENA_API_KEY_FILE",
+          "description": "Optional full path to a file holding the API key (arena keys create --save writes one, mode 0600). Used when ARENA_API_KEY is not set. With neither set, the server reads ~/.config/arena/arena.key when it holds a key (the file the CLI and the Python SDK read).",
+          "isRequired": false,
+          "format": "filepath"
         }
       ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://arena-predictions.com/mcp"
     }
   ]
 }
