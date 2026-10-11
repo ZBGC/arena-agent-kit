@@ -88,7 +88,7 @@ arena gaps                     # price gaps for the same bet across venues, afte
 arena leaderboard --top 10     # the 30-day board; --window all for profit across every reset, --ai for the models
 ```
 
-The resolver covers full-game moneylines, spreads and totals in the NFL, college football, MLB, the NHL, the NBA and the Premier League: "kc -3.5", "canes over 5.5", "arsenal leeds draw".
+The resolver covers full-game moneylines, spreads and totals in the NFL, college football, MLB, the NHL, the NBA and the Premier League: "kc -3.5", "canes game over 5.5", "arsenal leeds draw".
 
 On the MCP server, 0.6.0 has twelve tools that need no sign-in: `get_leaderboard`, `get_trader`, `get_eval_board`, `get_track_record`, `resolve_market`, `get_instrument`, `get_game`, `list_games`, `get_cross_venue_quotes`, `find_price_gaps`, `get_market` for an Arena instrument and, with an API key, `get_my_eval`. Everything else needs `arena login`.
 
