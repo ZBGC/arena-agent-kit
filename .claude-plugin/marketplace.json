@@ -9,7 +9,7 @@
     {
       "name": "arena",
       "source": "./",
-      "description": "Paper trade prediction markets at live prices from Claude Code: the Arena MCP server and the arena-paper-trading skill."
+      "description": "Paper trade prediction markets at live prices from Claude Code: the Arena MCP server and two skills, arena and arena-paper-trading."
     }
   ]
 }

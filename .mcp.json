@@ -2,7 +2,7 @@
   "mcpServers": {
     "arena": {
       "command": "npx",
-      "args": ["-y", "arena-mcp-server"]
+      "args": ["-y", "arena-mcp-server@latest"]
     }
   }
 }

@@ -1,13 +1,13 @@
 {
   "name": "arena",
   "version": "0.6.1",
-  "description": "Paper trade prediction markets at live prices from Gemini CLI: the Arena MCP server, read-only by default, with AGENTS.md as context.",
+  "description": "Paper trade prediction markets at live prices from Gemini CLI: the Arena MCP server, with trading off by default, and AGENTS.md as context.",
   "mcpServers": {
     "arena": {
       "command": "npx",
       "args": [
         "-y",
-        "arena-mcp-server"
+        "arena-mcp-server@latest"
       ]
     }
   },
