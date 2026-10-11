@@ -2,7 +2,7 @@
 
 Prompts to paste into Claude Code, Cursor or any coding agent that can run the `arena` CLI or has the Arena MCP server. Replace anything in angle brackets.
 
-Every prompt here is for paper trading, in paper dollars. None asks for a live order, and none adds `--live` or `--poly-intl` to `arena buy`, `sell` or `cancel`. From CLI 0.6.0 those flags on those commands send a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. The prompts still tell the agent to ask before it changes your account, because the positions and the record are yours.
+Every prompt here is for paper trading, in paper dollars. None asks for a live order, and none adds `--live` or `--poly-intl` to `arena buy`, `sell` or `cancel`. From CLI 0.6.0 those flags on those commands, or `ARENA_KALSHI_LIVE` or `ARENA_POLY_INTL_LIVE` set to 1, true or on in your shell, send a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. None of these prompts asks for either variable, so leave both unset when you use them. The prompts still tell the agent to ask before it changes your account, because the positions and the record are yours.
 
 ## First session
 
@@ -59,8 +59,8 @@ My bot is `<command that runs my bot>`. It reads a game's JSON on stdin and prin
 Run `examples/forward-test-a-bot/forward-test.sh --bot "<command that runs my bot>"` (a dry
 run) and show me, for the trade it picked: the game, the instrument label and what YES means,
 the side, contracts, where it would fill, the price, the stake, what it pays if it wins and the
-most it can lose. Then summarize `arena stats`: graded trades, win rate against the prices paid, closing-line value
-and max drawdown.
+most it can lose. Then summarize `arena stats`: graded trades, win rate against the prices paid,
+closing-line value and max drawdown.
 
 Do not add --place and do not run anything with --yes. If I say "place it", place exactly the
 trade the dry run showed me, once, as a paper trade: run
@@ -145,4 +145,4 @@ Show me the exact place_trade arguments first. Only call it, with confirm: true 
 UUID idempotency_key, after I say "go".
 ```
 
-The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server places no trades. A trade tool call is a paper trade unless it says `live: true` or `poly_intl: true`, or the server's environment sets `ARENA_KALSHI_LIVE` or `ARENA_POLY_INTL_LIVE` to 1, true or on (arena-mcp-server 0.6.0 or newer), and none of these prompts asks for that. Limit prices, `get_orders`, `cancel_order`, `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets`, `get_my_stats`, `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need arena-mcp-server 0.5.0 or newer, the first release on npm that has them; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.
+The trade tools exist only when the server runs with `ARENA_MCP_ALLOW_TRADE=1`. Without it, the MCP server places no trades. A trade tool call is a paper trade unless it says `live: true` or `poly_intl: true`, or the server's environment sets `ARENA_KALSHI_LIVE` or `ARENA_POLY_INTL_LIVE` to 1, true or on (arena-mcp-server 0.6.0 or newer). That is a live order to your own Kalshi or Polymarket International account with your own venue credentials: real money at the venue, under the venue's rules and terms. Arena is not a broker and never holds your funds. None of these prompts asks for one. Limit prices, `get_orders`, `cancel_order`, `list_games`, `get_game`, `get_instrument`, `get_price_history`, `screen_markets`, `get_my_stats`, `find_price_gaps`, and `route` and `dry_run` on `place_trade` and `sell_trade`, need arena-mcp-server 0.5.0 or newer, the first release on npm that has them; with `route: "best"`, the default, call `dry_run: true` first and show the venue before `confirm: true`.
