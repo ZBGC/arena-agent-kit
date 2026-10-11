@@ -5,7 +5,10 @@
 # place and places nothing. With --place it runs `arena buy ... --yes`, which
 # places a paper order on your account. It is never a live order: the script
 # does not pass the CLI's --live or --poly-intl, and it clears ARENA_KALSHI_LIVE
-# and ARENA_POLY_INTL_LIVE for its own commands.
+# and ARENA_POLY_INTL_LIVE for its own commands. (A live order is one sent to
+# your own Kalshi or Polymarket International account with your own venue
+# credentials: real money at the venue, under the venue's rules and terms.
+# Arena is not a broker and never holds your funds.)
 #
 # Usage:
 #   ./limit-at-the-bid.sh <ticker> <yes|no> <contracts> [--tif gtc|ioc|fok] [--expires 30m|4h|2d|ISO-time] [--place]
@@ -28,7 +31,7 @@ unset ARENA_KALSHI_LIVE ARENA_POLY_INTL_LIVE
 
 # Print the comment block above as help, then exit with the given code.
 usage() {
-  sed -n 's/^# \{0,1\}//; 2,20p' "$0" >&2
+  sed -n 's/^# \{0,1\}//; 2,23p' "$0" >&2
   exit "${1:-2}"
 }
 

@@ -18,7 +18,10 @@
 # Step 3 is a DRY RUN: it prices the trade and places nothing. Only --place
 # places it, as a paper trade on your account. It is never a live order: the
 # script does not pass the CLI's --live or --poly-intl, and it clears
-# ARENA_KALSHI_LIVE and ARENA_POLY_INTL_LIVE for its own commands.
+# ARENA_KALSHI_LIVE and ARENA_POLY_INTL_LIVE for its own commands. (A live order
+# is one sent to your own Kalshi or Polymarket International account with your
+# own venue credentials: real money at the venue, under the venue's
+# rules and terms. Arena is not a broker and never holds your funds.)
 #
 # Usage:
 #   ./forward-test.sh [--bot <command>] [--league <id>] [--max-price <cents>] [--place]
