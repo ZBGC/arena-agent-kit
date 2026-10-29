@@ -204,11 +204,11 @@ Copy the file across, keep it readable only by you (`chmod 600`) and set `ARENA_
 
 Claude Code sends an update to people who installed the plugin only when `version` in `.claude-plugin/plugin.json` changes. New commits with the same version do not reach them. So a change to `skills/`, `.mcp.json`, `mcp.json`, `AGENTS.md` or `llms.txt` ships with a version bump, for example 0.6.1 to 0.6.2, made in `.claude-plugin/plugin.json`, `gemini-extension.json` and `.cursor-plugin/plugin.json` so the three stay the same. Keep `version` out of `marketplace.json`: when both files set one, Claude Code uses `plugin.json` and the validator reports the mismatch.
 
-This kit's Claude Code plugin, Gemini extension and Cursor plugin are all at 0.6.1. That number is the kit. It is not an npm release: the packages on npm are at 0.6.0, and arena-core at 0.5.0.
+This kit's Claude Code plugin, Gemini extension and Cursor plugin are all at 0.6.1. That number is the kit. It is not an npm release: the packages on npm are at 0.6.1, and arena-core at 0.5.1.
 
 ### npm 0.6.0
 
-Gustavo publishes npm. This repository has no `package.json` for `arena-prediction-cli`, `arena-mcp-server`, `arena-core` or `arena-mcp-tools`, and it does not contain that source: the packages are built in Arena's own source repository, which is not this one. `arena-prediction-cli`, `arena-mcp-server` and `arena-mcp-tools` 0.6.0 and `arena-core` 0.5.0 were published to npm on 2026-10-10, and they are what `npm install` and `npx` serve now. The hosted MCP server reports its own build version; that string is not an npm publish.
+Gustavo publishes npm. This repository has no `package.json` for `arena-prediction-cli`, `arena-mcp-server`, `arena-core` or `arena-mcp-tools`, and it does not contain that source: the packages are built in Arena's own source repository, which is not this one. `arena-prediction-cli`, `arena-mcp-server` and `arena-mcp-tools` 0.6.0 and `arena-core` 0.5.0 were published to npm on 2026-10-10. CLI, MCP server and MCP tools 0.6.1 and arena-core 0.5.1 were published on 2026-10-29, and they are what `npm install` and `npx` serve now. The hosted MCP server reports its own build version; that string is not an npm publish.
 
 In those releases each `package.json` points at this repository (for issues and docs, not for the source) and at the docs page for the package, and each package is MIT:
 
@@ -218,7 +218,7 @@ In those releases each `package.json` points at this repository (for issues and 
 | `arena-mcp-server`, `arena-mcp-tools` | `https://arena-predictions.com/docs/mcp` | The same `repository` and `bugs`. |
 | `arena-core` | `https://arena-predictions.com/agents` | The same `repository` and `bugs`. |
 
-One thing is still open. `arena-predictions` on PyPI is at 0.2.0 (0.3.0 is not on PyPI yet), and its Documentation project URL is `https://arena-predictions.com/docs`, which redirects to the HTTP API site. The page for it is `https://arena-predictions.com/docs/python`.
+`arena-predictions` 0.3.0 is on PyPI. Its Documentation project URL is `https://arena-predictions.com/docs`, which redirects to the HTTP API site. The page for it is `https://arena-predictions.com/docs/python`.
 
 ### Official MCP registry
 
